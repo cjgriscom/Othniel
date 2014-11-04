@@ -1,4 +1,4 @@
-inline seq test
+inline sequence test
 	[TRUE, 5]var[res]
 	[res]PRINTLN
 	[FALSE, 0]var[get]
@@ -17,10 +17,10 @@ inline seq test
 	[" "]PRINT
 	[int2]PRINT
 
-static seq [write:Bool, value:I32]var[glob:I32] // Should behave statically
+static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 
-static seq [bool1:Bool, bool2:Bool]printBooleanOps
+static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]XOR[x]
 	["Result of XOR: "]PRINT
 	[x]PRINTLN
@@ -40,6 +40,6 @@ static seq [bool1:Bool, bool2:Bool]printBooleanOps
 	["Result of NOR: "]PRINT
 	[x]PRINTLN
 
-inline seq [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
+inline sequence [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
 	[a]:[newB]
 	[b]:[newA]

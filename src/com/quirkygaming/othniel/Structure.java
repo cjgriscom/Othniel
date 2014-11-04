@@ -7,15 +7,18 @@ public class Structure extends Callable {
 	
 	ArrayList<CachedCall> callList = new ArrayList<CachedCall>();
 	
-	private Type t;
+	private ExecutionMode em;
+	private RunMode rm;
 	private StructInput[] inputs;
 	private StructOutput[] outputs;
 	
 	public final HashMap<String, PipeDef> pipeDefs = new HashMap<String, PipeDef>();
 	
-	public Structure(Type t, StructInput[] inputs, StructOutput[] outputs, String name, int lineN) {
+	public Structure(ExecutionMode em, RunMode rm, StructInput[] inputs, StructOutput[] outputs, String name, int lineN) {
 		super(name, getTypesFromStructNodeArray(inputs), getTypesFromStructNodeArray(outputs));
-		this.t = t;
+		this.em = em;
+		this.rm = rm;
+		ParseError.validate(rm == RunMode.SEQUENTIAL, lineN, "Error: Parallel execution not yet implemented");
 		this.inputs = inputs;
 		this.outputs = outputs;
 		for (PipeDef pd : inputs) {
@@ -28,7 +31,7 @@ public class Structure extends Callable {
 		}
 	}
 	
-	private boolean isStatic() {return this.t == Type.STATIC;}
+	private boolean isStatic() {return this.em == ExecutionMode.STATIC;}
 	
 	private static Datatype[] getTypesFromStructNodeArray(Object[] array) {
 		Datatype[] typeArray = new Datatype[array.length];
@@ -43,15 +46,25 @@ public class Structure extends Callable {
 		return typeArray;
 	}
 	
-	public enum Type {
-		STATIC("static seq"), INLINE("inline seq");
+	public enum ExecutionMode {
+		STATIC("static"), INLINE("inline");
 		
 		private String name;
-		
-		private Type(String s) {
+		private ExecutionMode(String s) {
 			name = s;
 		}
+		public String toString() {
+			return name;
+		}
+	}
+	
+	public enum RunMode {
+		SEQUENTIAL("sequence"), PARALLEL("parallel");
 		
+		private String name;
+		private RunMode(String s) {
+			name = s;
+		}
 		public String toString() {
 			return name;
 		}
@@ -105,8 +118,10 @@ public class Structure extends Callable {
 		Pipe[] inputPipes = getIns(ins, c);
 		Pipe[] outputPipes = getOuts(outs, c);
 		
+		//TODO if rm is PARALLEL, link calls and create threads
+		
 		for (CachedCall innerCall : callList) {
-			if (this.t == Type.INLINE) innerCall.resetRuntime(); //TODO don't think this is right? maybe it is
+			if (this.em == ExecutionMode.INLINE) innerCall.resetRuntime(); //TODO don't think this is right? maybe it is
 			
 			replaceWaits(innerCall.ins, true, inputPipes, outputPipes);
 			replaceWaits(innerCall.outs, false, inputPipes, outputPipes);

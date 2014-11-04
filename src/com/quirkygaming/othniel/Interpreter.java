@@ -65,17 +65,26 @@ public class Interpreter {
 		String[] splitInfo = line.split(" ");
 		
 		ParseError.validate(splitInfo.length > 2, lineN, "Malformed callable header");
-		ParseError.validate(splitInfo[1].equals("seq"), lineN, "Malformed callable header");
 		
-		Structure.Type t = null;
+		Structure.ExecutionMode em = null;
 		
 		if (splitInfo[0].equals("inline")) {
-			t = Structure.Type.INLINE;
+			em = Structure.ExecutionMode.INLINE;
 		} else if (splitInfo[0].equals("static")) {
-			t = Structure.Type.STATIC;
+			em = Structure.ExecutionMode.STATIC;
 		}
 		
-		ParseError.validate(t != null, lineN, "Malformed callable header");
+		ParseError.validate(em != null, lineN, "Malformed callable header");
+		
+		Structure.RunMode rm = null;
+		
+		if (splitInfo[1].equals("parallel")) {
+			rm = Structure.RunMode.PARALLEL;
+		} else if (splitInfo[1].equals("sequence")) {
+			rm = Structure.RunMode.SEQUENTIAL;
+		}
+		
+		ParseError.validate(rm != null, lineN, "Malformed callable header");
 		
 		CallParser call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN);
 		
@@ -89,7 +98,7 @@ public class Interpreter {
 			for (int i = 0; i < call.outParams.length; i++) {
 				outputNodes[i] = new StructOutput(call.outParams[i], inputNodes, lineN);
 			}
-			return new Structure(t, inputNodes, outputNodes, call.callName, lineN);
+			return new Structure(em, rm, inputNodes, outputNodes, call.callName, lineN);
 		}
 	}
 	
