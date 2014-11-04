@@ -1,0 +1,11 @@
+static seq [a:Bool, b:Bool]XNOR[c:Bool]
+	[a, b]XOR[c]
+	[c]NOT[c]
+
+static seq [a:Bool, b:Bool]NAND[c:Bool]
+	[a, b]AND[c]
+	[c]NOT[c]
+
+static seq [a:Bool, b:Bool]NOR[c:Bool]
+	[a, b]OR[c]
+	[c]NOT[c]
