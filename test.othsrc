@@ -15,7 +15,9 @@ inline sequence test
 	[int1,int2]SWAP[int1,int2]
 	[int1]PRINT
 	[" "]PRINT
-	[int2]PRINT
+	[int2]PRINTLN
+	[int1, int2]+[onePlus2]
+	[onePlus2]PRINTLN
 
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]

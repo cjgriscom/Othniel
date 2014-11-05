@@ -13,7 +13,10 @@ public class Constants {
 				int n = Integer.parseInt(s);
 				return new Pipe(null, n, Datatype.I32);
 			} catch (NumberFormatException e) {}
-			
+			try {
+				double n = Double.parseDouble(s);
+				return new Pipe(null, n, Datatype.Double);
+			} catch (NumberFormatException e) {}
 		}
 		
 		return null;

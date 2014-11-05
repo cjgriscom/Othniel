@@ -2,6 +2,8 @@ package com.quirkygaming.othniel;
 
 import java.util.Scanner;
 
+import com.quirkygaming.othniel.MathOps.Op;
+
 
 public class Natives extends CallableContainer {
 	
@@ -39,6 +41,8 @@ public class Natives extends CallableContainer {
 			Object value = null;
 			if (ins[0].type() == Datatype.I32) {
 				value = in.nextInt();
+			} else if (ins[0].type() == Datatype.Double) {
+				value = in.nextDouble();
 			} else if (ins[0].type() == Datatype.String) {
 				value = in.next();
 			} else if (ins[0].type() == Datatype.Bool) {
@@ -137,11 +141,17 @@ public class Natives extends CallableContainer {
 	static class Add extends Callable {
 		public Add(String name) {
 			super(	name,
-					new Datatype[]{Datatype.I32, Datatype.I32},
-					new Datatype[]{Datatype.I32});
+					new Datatype[]{Datatype.Numeric, Datatype.implicit(0)},
+					new Datatype[]{Datatype.implicit(0)});
 		}
 		public void call(Pipe[] ins, Pipe[] outs, CachedCall c) {
-			outs[0].set((Integer) ins[0].get() + (Integer) ins[1].get());
+			outs[0].set(MathOps.op(Op.ADD, 
+					ins[0].get(), 
+					ins[1].get(), 
+					ins[0].type(), 
+					ins[1].type()
+					));
+			
 		}
 	}
 	
