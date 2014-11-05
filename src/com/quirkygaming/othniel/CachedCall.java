@@ -6,13 +6,13 @@ public class CachedCall {
 	Pipe[] ins;
 	Pipe[] outs;
 	private Callable call;
-	private int line;
+	private int lineN;
 	
-	public CachedCall(Pipe[] ins, Callable call, Pipe[] outs, int line) {
+	public CachedCall(Pipe[] ins, Callable call, Pipe[] outs, int lineN) {
 		this.defIns = ins;
 		this.defOuts = outs;
 		this.call = call;
-		this.line = line;
+		this.lineN = lineN;
 		this.ins = ins;
 		this.outs = outs; // TODO might not work... errrrg
 	}
@@ -26,5 +26,5 @@ public class CachedCall {
 		outs = defOuts.clone();
 	}
 	
-	public int getLine() {return line;}
+	public int getLine() {return lineN;}
 }
