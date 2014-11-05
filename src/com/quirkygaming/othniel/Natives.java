@@ -41,12 +41,13 @@ public class Natives extends CallableContainer {
 		
 		@Override
 		public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
+			// Loop through ins and outs and if any are defined implicitly, verify their type correctness
 			for (int i = 0; i < ins.length; i++) {
 				Datatype reqType = ins[i];
 				if (reqType.isImplicit()) reqType = reqType.getImplicitType(runtimeIns[i].getLabel(), c);
 				else continue;
 				Datatype runtimeType = runtimeIns[i].type();
-				Datatype.checkCompat(runtimeType, reqType, c.getLine()); // TODO verify order
+				Datatype.checkCompat(runtimeType, reqType, c.getLine());
 			}
 			for (int i = 0; i < outs.length; i++) {
 				Datatype reqType = outs[i];
@@ -56,7 +57,7 @@ public class Natives extends CallableContainer {
 				Datatype.checkCompat(reqType, runtimeType, c.getLine()); // TODO verify order
 			}
 			this.c = c;
-			call(runtimeIns,runtimeOuts);
+			call(runtimeIns,runtimeOuts); // Forward to actual natives
 		}
 		
 		public abstract void call(Pipe[] ins, Pipe[] outs);
