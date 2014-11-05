@@ -80,7 +80,7 @@ public class Structure extends Callable {
 			runtimeIns = new Pipe[this.ins.length];
 			for (int i = 0; i < this.ins.length; i++) {
 				if (ins[i] != null) {
-					runtimeIns[i] = new Pipe(ins[i]); // Copy the input
+					runtimeIns[i] = new Pipe(ins[i], c.getLine()); // Copy the input
 				} else {
 					runtimeIns[i] = inputs[i].type().newPipe(ins[i].getLabel(), c); // Otherwise get the default TODO defaults
 				}
@@ -88,7 +88,7 @@ public class Structure extends Callable {
 			initializedIns = true;
 		} else {
 			for (int i = 0; i < this.ins.length; i++) {
-				if (ins[i] != null) runtimeIns[i].set(ins[i].get());
+				if (ins[i] != null) runtimeIns[i].set(ins[i].get(), ins[i].type(), c.getLine());
 			}
 		}
 		
@@ -100,16 +100,15 @@ public class Structure extends Callable {
 			runtimeOuts = new Pipe[this.outs.length];
 			for (int i = 0; i < this.outs.length; i++) {
 				runtimeOuts[i] = outputs[i].type().newPipe(outs[i].getLabel(), c); // get the default TODO defaults
-				
 			}
 			initializedOuts = true;
 		}
 		return runtimeOuts;
 	}
 	
-	public void copyResult(Pipe[] to) {
+	public void copyResult(Pipe[] to, CachedCall c) {
 		for (int i = 0; i < to.length; i++) {
-			to[i].set(runtimeOuts[i].get());
+			to[i].set(runtimeOuts[i].get(), runtimeOuts[i].type(), c.getLine());
 		}
 	}
 
@@ -128,7 +127,7 @@ public class Structure extends Callable {
 			innerCall.call();
 		}
 		
-		copyResult(outs);
+		copyResult(outs, c);
 	}
 	
 	private void replaceWaits(Pipe[] pipes, boolean isInput, Pipe[] inputPipes, Pipe[] outputPipes) {

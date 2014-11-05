@@ -61,7 +61,7 @@ public class Datatype {
 		return this.isAbstract;
 	}
 	
-	public Pipe newPipe(String label, CachedCall call) {
+	public Datatype getImplicitType(String label, CachedCall call) {
 		if (isImplicit()) {
 			int indexToUse = inputIndex;
 			if (indexToUse == -1) {
@@ -74,9 +74,13 @@ public class Datatype {
 					}
 				}
 			}
-			return new Pipe(label, call.ins[inputIndex].type());
+			return call.ins[inputIndex].type();
 		}
-		return new Pipe(label, this);
+		return this;
+	}
+	
+	public Pipe newPipe(String label, CachedCall call) {
+		return new Pipe(label, getImplicitType(label, call));
 	}
 	
 	public boolean isStrongerThan(Datatype other) {
@@ -121,6 +125,31 @@ public class Datatype {
 	
 	public static Datatype implicitNumStrength(int... inputIndices) {
 		return new Datatype(inputIndices);
+	}
+	
+	@Override
+	public String toString() {
+		return ID;
+	}
+	
+	private static Object checkCompatInternal(Object object, Datatype fromT, Datatype toT, int lineN, boolean cast) {
+		if (toT.isNumeric() && fromT.isNumeric()) {
+			RuntimeError.validate(toT.isStrongerThan(fromT) || toT.equals(fromT), lineN, 
+					"Cannot cast a number to a weaker type");
+			if (!toT.equals(fromT) && cast) return MathOps.castNumber(object, fromT, toT);
+		} else {
+			RuntimeError.validate(toT.equals(fromT), lineN, 
+					"Incompatible types: " + fromT + " and " + toT);
+		}
+		return object;
+	}
+	
+	public static Object checkCompatAndCast(Object object, Datatype fromT, Datatype toT, int lineN) {
+		return checkCompatInternal(object, fromT, toT, lineN, true);
+	}
+	
+	public static void checkCompat(Datatype fromT, Datatype toT, int lineN) {
+		checkCompatInternal(null, fromT, toT, lineN, false);
 	}
 	
 }

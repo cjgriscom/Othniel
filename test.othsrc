@@ -4,14 +4,15 @@ inline sequence test
 	[FALSE, 0]var[get]
 	[get]PRINTLN
 	
-	["Enter two booleans: "]PRINT
-	[FALSE]INPUT[bool1]
-	[FALSE]INPUT[bool2]
-	[bool1, bool2]printBooleanOps
+	//["Enter two booleans: "]PRINT
+	//[FALSE]INPUT[bool1]
+	//[FALSE]INPUT[bool2]
+	//[bool1, bool2]printBooleanOps
 	
 	["Enter two ints: "]PRINT
-	[0]INPUT[int1]
+	[8]INPUT[int1]
 	[0]INPUT[int2]
+	[5.5]:[int1]
 	[int1,int2]SWAP[int1,int2]
 	[int1]PRINT
 	[" "]PRINT

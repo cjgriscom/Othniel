@@ -114,7 +114,7 @@ public class Interpreter {
 		
 		for (int i = 0; i < cp.inParams.length; i++) {
 			String token = cp.inParams[i].trim();
-			Pipe cnst = Constants.matchConstant(token);
+			Pipe cnst = Constants.matchConstant(token, lineN);
 			if (cnst == null) {
 				ParseError.validate(structure.pipeDefs.containsKey(token), lineN, "Symbol not recognized: " + token);
 				if (structure.pipeDefs.get(token) instanceof Pipe) {
@@ -137,7 +137,7 @@ public class Interpreter {
 					outPipes[i] = new UndefinedPipe(structure.pipeDefs.get(token)); // The structure will handle the replacement
 				}
 			} else {
-				ParseError.validate(Constants.matchConstant(token) == null, lineN, "A constant can not be used as an output pipe: " + token);
+				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
 				Pipe p = nativ.outs[i].newPipe(token, currentCall);
 				structure.pipeDefs.put(token, p);
 				outPipes[i] = p;
