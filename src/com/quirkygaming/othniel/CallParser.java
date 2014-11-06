@@ -28,7 +28,7 @@ public class CallParser {
 	}
 	
 	public static void main(String[] args) { // Test method
-		String line = "[pipe]a s[ss] [s]s[]a[var33, l] [a]asd[b]op[p]";
+		String line = "[pipe]a s[ss] [s]s[^]a[var33, l] [a]asd[b]op[p]";
 		
 		CallParser parser = new CallParser(line, 123, false);
 		
@@ -45,6 +45,29 @@ public class CallParser {
 			}
 			System.out.println("]");
 		}
+	}
+	
+	private String[] adjoinedInsFromOuts(String[] outs) {
+		// Determine length, scrapping garbage pipes
+		int length = 0;
+		for (String label : outs) {
+			if (!label.equals(GarbagePipe.INSTANCE.getLabel())) {
+				length++;
+			}
+		}
+		
+		String[] ins = new String[length]; // Add each of the non-garbage labels to the clone
+		int i = 0;
+		for (String label : outs) {
+			if (label.equals(">")) {
+				ins[i] = "<";
+				i++;
+			} else if (!label.equals(GarbagePipe.INSTANCE.getLabel())) {
+				ins[i] = label;
+				i++;
+			}
+		}
+		return ins;
 	}
 	
 	public CallParser(String line, int lineN, boolean isHeader) {
@@ -114,8 +137,8 @@ public class CallParser {
 				}
 			} else if (c.type == CALL_NAME) {
 				if (currentCall.outParams != null) { // Adjoined call
-					// Advance currentCall to new one
-					String[] newIns = currentCall.outParams.clone();
+					// Determine adjoined inputs and advance currentCall to new one
+					String[] newIns = adjoinedInsFromOuts(currentCall.outParams);
 					currentCall = advance(currentCall, lineN, c);
 					currentCall.inParams = newIns;
 				}

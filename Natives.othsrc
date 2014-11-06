@@ -9,3 +9,14 @@ static sequence [a:Bool, b:Bool]NOR[c:Bool]
 	
 inline sequence [a:Numeric]NEGATE[b:typeof a]
 	[0, a]-[b]
+	
+inline sequence [a:Numeric]++[b:typeof a] //TODO shrink the 1 constants to I8 types once syntax is defined
+	[a, 1]+[b]
+
+inline sequence [a:Numeric]--[b:typeof a]
+	[a, 1]-[b]
+	
+inline sequence [a:Numeric, b:typeof a]MINMAX[min:typeof a, max:typeof a]
+	[a, b]>[r]
+	[r, a, b]?:[max]
+	[r, b, a]?:[min]

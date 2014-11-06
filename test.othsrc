@@ -4,7 +4,10 @@
 inline sequence test
 	[TRUE, 5]var[res]PRINTLN
 	[FALSE, 0]var[get]PRINTLN
-	getDefault[>]PRINTLN
+	getDefault[>] ["Default: ", <]PRINTLN
+	["Min,max of 8 and 10: "]PRINT		[8,10]MINMAX[>, >] [<, ",", <]PRINTLN
+	["Max of 8 and 10: "]PRINT			[8,10]MINMAX[>, ^]PRINTLN
+	["Max of 8 and 10: "]PRINT			[8,10]MINMAX[^, >]PRINTLN
 	
 	["Enter two booleans: "]PRINT
 	[FALSE]INPUT[bool1]
@@ -30,7 +33,7 @@ static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 	
 inline sequence getDefault[r:I32] // Should NOT return null; I need to define defaults
-
+	
 static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]XOR[x]  ["Result of XOR:  ", x]PRINTLN
 	[bool1, bool2]AND[x]  ["Result of AND:  ", x]PRINTLN

@@ -9,6 +9,17 @@ public class ParseError {
 		}
 	}
 	
+	public static void verifySymbolRecognized(boolean condition, int lineN, String token) {
+		if (!condition) {
+			if (token.startsWith("<")) {
+				System.err.println("Parsing Error: Valid > link not found for < at line " + lineN);
+			} else {
+				System.err.println("Parsing Error: Symbol not recognized: " + token + " at line " + lineN);
+			}
+			System.exit(1);
+		}
+	}
+	
 	public static void throwIf(boolean condition, int lineN, String problem) {
 		validate(!condition, lineN, problem);
 	}

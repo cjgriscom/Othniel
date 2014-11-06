@@ -17,9 +17,11 @@ public class Interpreter {
 	}
 	
 	static int lineN;
+	static int callN;
 	
 	public static void parseStage(boolean headersOnly, String filename, File file, HashMap<String, Callable> retrievedCalls) {
 		lineN = 0; // Reset line number
+		
 		try (Scanner in = new Scanner(file)){ // Attempt to read file
 			
 			Structure newStructure = null;
@@ -37,7 +39,8 @@ public class Interpreter {
 						CallParser parser = new CallParser(line, lineN, false);
 						
 						for (ParsedCall call : parser.getCalls()) { // Loop through each individual call and add to structure
-							newStructure.callList.add(parseCall(call, newStructure, line, lineN));
+							newStructure.callList.add(
+									parseCall(call, newStructure, line, lineN, newStructure.callList.size()));
 						}
 						
 					}
@@ -93,7 +96,7 @@ public class Interpreter {
 		
 		ParseError.validate(rm != null, lineN, "Malformed callable header");
 		
-		CallParser.ParsedCall call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN, true).firstCall();
+		ParsedCall call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN, true).firstCall();
 		
 		if (exists) return (Structure)Callable.getCallable(call.callName);
 		else {
@@ -109,8 +112,7 @@ public class Interpreter {
 		}
 	}
 	
-	public static CachedCall parseCall(ParsedCall call, Structure structure, String line, int lineN) {
-
+	public static CachedCall parseCall(ParsedCall call, Structure structure, String line, int lineN, int callN) {
 		Pipe inPipes[] = new Pipe[call.inParams.length];
 		Pipe outPipes[] = new Pipe[call.outParams.length];
 
@@ -118,11 +120,21 @@ public class Interpreter {
 		ParseError.validate(nativ != null, lineN, "Call not found: " + call.callName);
 		CachedCall currentCall = new CachedCall(inPipes, nativ, outPipes, lineN);
 		
+		int refInOccurance = 0; // For < and >
+		int refOutOccurance = 0; // For < and >
+		
 		for (int i = 0; i < call.inParams.length; i++) {
 			String token = call.inParams[i].trim();
+			ParseError.throwIf(token.equals("^"), lineN, "^ not allowed in inputs");
+			ParseError.throwIf(token.startsWith(">"), lineN, "> not allowed in inputs");
+			if (token.equals("<")) {
+				token = "<" + (callN-1) + "." + refInOccurance; // Reference > from last call
+				refInOccurance++;
+			}
+			
 			Pipe cnst = Constants.matchConstant(token, lineN);
 			if (cnst == null) {
-				ParseError.validate(structure.pipeDefs.containsKey(token), lineN, "Symbol not recognized: " + token);
+				ParseError.verifySymbolRecognized(structure.pipeDefs.containsKey(token), lineN, token);
 				if (structure.pipeDefs.get(token) instanceof Pipe) {
 					inPipes[i] = (Pipe)structure.pipeDefs.get(token);
 				} else {
@@ -136,7 +148,15 @@ public class Interpreter {
 		for (int i = 0; i < call.outParams.length; i++) {
 			String token = call.outParams[i].trim();
 			
-			if (structure.pipeDefs.containsKey(token)) {
+			ParseError.throwIf(token.equals("<"), lineN, "< not allowed in outputs");
+			if (token.equals(">")) {
+				token = "<" + (callN) + "." + refOutOccurance; // Create pipe reference
+				refOutOccurance++;
+			}
+			
+			if (token.equals(GarbagePipe.INSTANCE.getLabel())) {
+				outPipes[i] = GarbagePipe.INSTANCE;
+			} else if (structure.pipeDefs.containsKey(token)) {
 				if (structure.pipeDefs.get(token) instanceof Pipe) {
 					outPipes[i] = (Pipe)structure.pipeDefs.get(token);
 				} else {
