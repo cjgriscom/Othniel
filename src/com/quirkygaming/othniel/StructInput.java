@@ -1,16 +1,9 @@
 package com.quirkygaming.othniel;
 
 public class StructInput extends PipeDef {
-	public final String label;
-	public final Datatype type;
 	
-	public StructInput(String expression, int lineN) {
-		expression = expression.trim();
-		//TODO optional params
-		int colonPos = expression.indexOf(':');
-		ParseError.validate(colonPos > -1, lineN, "Expected (label):(type)");
-		label = expression.substring(0, colonPos);
-		type = Datatype.fromExpression(expression.substring(colonPos + 1), null, true, lineN);	
+	public StructInput(String expression, StructInput[] knownInParams, int lineN) {
+		super(expression, knownInParams, lineN);
 	}
 	
 	@Override

@@ -1,9 +1,7 @@
 package com.quirkygaming.othniel;
 
 public class Pipe extends PipeDef {
-	private String label;
 	private Object value;
-	private Datatype type;
 	
 	public Pipe(Pipe p, int lineN) {
 		this(p.label, p.value, p.type, p.type, lineN);
@@ -14,8 +12,7 @@ public class Pipe extends PipeDef {
 	}
 	
 	protected Pipe(String label, Datatype t, boolean throwExp) {
-		this.label = label;
-		this.type = t;
+		super(label, t);
 		
 		if (t.isImplicit() && throwExp) throw new RuntimeException("Internal: Cannot directly create a pipe from an implicit datatype");
 	}

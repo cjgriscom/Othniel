@@ -1,6 +1,10 @@
+//TODO add pipe keywords: ^ for garbagepipe, > for unnamed forward
+//TODO check for valid pipe names and method names
+
 inline sequence test
 	[TRUE, 5]var[res]PRINTLN
 	[FALSE, 0]var[get]PRINTLN
+	getDefault[>]PRINTLN
 	
 	["Enter two booleans: "]PRINT
 	[FALSE]INPUT[bool1]
@@ -24,6 +28,8 @@ inline sequence test
 
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
+	
+inline sequence getDefault[r:I32] // Should NOT return null; I need to define defaults
 
 static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]XOR[x]  ["Result of XOR:  ", x]PRINTLN

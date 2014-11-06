@@ -100,7 +100,7 @@ public class Interpreter {
 			StructInput[] inputNodes = new StructInput[call.inParams.length];
 			StructOutput[] outputNodes = new StructOutput[call.outParams.length];
 			for (int i = 0; i < call.inParams.length; i++) {
-				inputNodes[i] = new StructInput(call.inParams[i], lineN);
+				inputNodes[i] = new StructInput(call.inParams[i], inputNodes, lineN);
 			}
 			for (int i = 0; i < call.outParams.length; i++) {
 				outputNodes[i] = new StructOutput(call.outParams[i], inputNodes, lineN);
