@@ -104,8 +104,7 @@ public class Datatype {
 		exp = exp.trim();
 		if (knownTypes.containsKey(exp)) {
 			return knownTypes.get(exp);
-		} else if (exp.startsWith("typeof ")) {
-			//ParseError.validate(! isInput, lineN, "typeof cannot be applied to inputs"); // TODO hmm
+		} else if (ins != null && exp.startsWith("typeof ")) { // Where null would indicate typeof isn't allowed
 			String implicitPipe = exp.substring(7).trim();
 			ParseError.validate(!implicitPipe.isEmpty(), lineN, "typeof requires a referenced pipe");
 			for (int i = 0; i < ins.length; i++) {
