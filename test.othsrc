@@ -5,7 +5,7 @@ inline sequence test
 	[TRUE, 5]var[res]PRINTLN
 	[FALSE, 0]var[get]PRINTLN
 	getDefault[>] ["Default: ", <]PRINTLN
-	["Min,max of 8 and 10: "]PRINT		[8,10]MINMAX[>, >] [<, ",", <]PRINTLN
+	["Min,max of 5 and 7: "]PRINT		[5,7]MINMAX[>, >] [<, ",", <]PRINTLN
 	["Max of 8 and 10: "]PRINT			[8,10]MINMAX[>, ^]PRINTLN
 	["Max of 8 and 10: "]PRINT			[8,10]MINMAX[^, >]PRINTLN
 	
@@ -17,17 +17,17 @@ inline sequence test
 	["Enter two ints: "]PRINT
 	[0]INPUT[int1] [0]INPUT[int2]
 	[int1,int2]SWAP[int1,int2]
-	[int1, "+", int2, "="]PRINT [int1, int2, int1]+[result]PRINTLN // TODO really need signature checks
-	[int1, "-", int2, "="]PRINT [int1, int2]-[result]PRINTLN
-	[int1, "*", int2, "="]PRINT [int1, int2]*[result]PRINTLN
-	[int1, "/", int2, "="]PRINT [int1, int2]/[result]PRINTLN
-	[int1, "%", int2, "="]PRINT [int1, int2]%[result]PRINTLN
-	[int1, "=", int2, "?  "]PRINT [int1, int2]=[bresult]PRINTLN
-	[int1, "!=", int2, "? "]PRINT [int1, int2]!=[bresult]PRINTLN
-	[int1, ">", int2, "?  "]PRINT [int1, int2]>[bresult]PRINTLN
-	[int1, "<", int2, "?  "]PRINT [int1, int2]<[bresult]PRINTLN
-	[int1, ">=", int2, "? "]PRINT [int1, int2]>=[bresult]PRINTLN
-	[int1, "<=", int2, "? "]PRINT [int1, int2]<=[bresult]PRINTLN
+	[int1, "+", int2, "="]PRINT [int1, int2, int1]+[>]PRINTLN // TODO really need signature checks
+	[int1, "-", int2, "="]PRINT [int1, int2]-[>]PRINTLN
+	[int1, "*", int2, "="]PRINT [int1, int2]*[>]PRINTLN
+	[int1, "/", int2, "="]PRINT [int1, int2]/[>]PRINTLN
+	[int1, "%", int2, "="]PRINT [int1, int2]%[>]PRINTLN
+	[int1, "=", int2, "?  "]PRINT [int1, int2]=[>]PRINTLN
+	[int1, "!=", int2, "? "]PRINT [int1, int2]!=[>]PRINTLN
+	[int1, ">", int2, "?  "]PRINT [int1, int2]>[>]PRINTLN
+	[int1, "<", int2, "?  "]PRINT [int1, int2]<[>]PRINTLN
+	[int1, ">=", int2, "? "]PRINT [int1, int2]>=[>]PRINTLN
+	[int1, "<=", int2, "? "]PRINT [int1, int2]<=[>]PRINTLN
 
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
