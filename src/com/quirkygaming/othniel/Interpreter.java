@@ -45,7 +45,6 @@ public class Interpreter {
 					// Header
 					newStructure = parseHeader(line, !headersOnly);
 					if (headersOnly) {
-						CallableContainer.calls.put(newStructure.name(), newStructure);
 						retrievedCalls.put(newStructure.name(), newStructure);
 					}
 					
@@ -96,7 +95,7 @@ public class Interpreter {
 		
 		CallParser.ParsedCall call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN, true).firstCall();
 		
-		if (exists) return (Structure)CallableContainer.getCallable(call.callName);
+		if (exists) return (Structure)Callable.getCallable(call.callName);
 		else {
 			StructInput[] inputNodes = new StructInput[call.inParams.length];
 			StructOutput[] outputNodes = new StructOutput[call.outParams.length];
@@ -115,7 +114,7 @@ public class Interpreter {
 		Pipe inPipes[] = new Pipe[call.inParams.length];
 		Pipe outPipes[] = new Pipe[call.outParams.length];
 
-		Callable nativ = Natives.getCallable(call.callName);
+		Callable nativ = Callable.getCallable(call.callName);
 		ParseError.validate(nativ != null, lineN, "Call not found: " + call.callName);
 		CachedCall currentCall = new CachedCall(inPipes, nativ, outPipes, lineN);
 		

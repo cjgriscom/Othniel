@@ -6,3 +6,6 @@ static sequence [a:Bool, b:Bool]NAND[c:Bool]
 
 static sequence [a:Bool, b:Bool]NOR[c:Bool]
 	[a, b]OR[c]NOT[c]
+	
+inline sequence [a:Numeric]NEGATE[b:typeof a]
+	[0, a]-[b]

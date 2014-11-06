@@ -2,8 +2,6 @@ inline sequence test
 	[TRUE, 5]var[res]PRINTLN
 	[FALSE, 0]var[get]PRINTLN
 	
-	[1.456]pipe[a]PRINTLN
-	
 	["Enter two booleans: "]PRINT
 	[FALSE]INPUT[bool1]
 	[FALSE]INPUT[bool2]
@@ -11,11 +9,18 @@ inline sequence test
 	
 	["Enter two ints: "]PRINT
 	[0]INPUT[int1] [0]INPUT[int2]
-	[int1,int2]SWAP[int1,int2] [int1, int2]+[onePlus2]
-	[int1, "+", int2, "=", onePlus2]PRINTLN
-
-inline sequence [write:Anything]pipe[write: typeof write]
-	[write]:[write]
+	[int1,int2]SWAP[int1,int2]
+	[int1, "+", int2, "="]PRINT [int1, int2, int1]+[result]PRINTLN // TODO really need signature checks
+	[int1, "-", int2, "="]PRINT [int1, int2]-[result]PRINTLN
+	[int1, "*", int2, "="]PRINT [int1, int2]*[result]PRINTLN
+	[int1, "/", int2, "="]PRINT [int1, int2]/[result]PRINTLN
+	[int1, "%", int2, "="]PRINT [int1, int2]%[result]PRINTLN
+	[int1, "=", int2, "?  "]PRINT [int1, int2]=[bresult]PRINTLN
+	[int1, "!=", int2, "? "]PRINT [int1, int2]!=[bresult]PRINTLN
+	[int1, ">", int2, "?  "]PRINT [int1, int2]>[bresult]PRINTLN
+	[int1, "<", int2, "?  "]PRINT [int1, int2]<[bresult]PRINTLN
+	[int1, ">=", int2, "? "]PRINT [int1, int2]>=[bresult]PRINTLN
+	[int1, "<=", int2, "? "]PRINT [int1, int2]<=[bresult]PRINTLN
 
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]

@@ -1,7 +1,11 @@
 package com.quirkygaming.othniel;
 
+import java.util.HashMap;
+
 
 public abstract class Callable {
+	
+	static HashMap<String, Callable> callList = new HashMap<String, Callable>();
 	
 	protected Datatype[] ins;
 	protected Datatype[] outs;
@@ -11,6 +15,11 @@ public abstract class Callable {
 		this.ins = ins;
 		this.outs = outs;
 		this.name = name;
+		callList.put(name, this);
+	}
+	
+	public static Callable getCallable(String callable) {
+		return callList.get(callable);
 	}
 	
 	public final String name() {

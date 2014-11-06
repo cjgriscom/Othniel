@@ -2,36 +2,37 @@ package com.quirkygaming.othniel;
 
 import java.util.Scanner;
 
+import com.quirkygaming.othniel.CompOps.COp;
 import com.quirkygaming.othniel.MathOps.Op;
 
-public class Natives extends CallableContainer {
+public class Natives {
 	
 	private static Scanner in = new Scanner(System.in);
 	
 	static void initNatives() {
-		cache(new Input("INPUT"));
-		cache(new InputLine("INPUTLN"));
-		cache(new Print(false, "PRINT"));
-		cache(new Print(true, "PRINTLN"));
-		cache(new Assign(":"));
-		cache(new Xor("XOR"));
-		cache(new And("AND"));
-		cache(new Or("OR"));
-		cache(new Not("NOT"));
-		cache(new Ternary("?:"));
-		cache(new MathOp("+", Op.ADD));
-		cache(new MathOp("-", Op.SUBTRACT));
-		cache(new MathOp("*", Op.MULTIPLY));
-		cache(new MathOp("/", Op.DIVIDE));
-		cache(new MathOp("%", Op.MOD));
+		new Input("INPUT");
+		new InputLine("INPUTLN");
+		new Print(false, "PRINT");
+		new Print(true, "PRINTLN");
+		new Assign(":");
+		new Xor("XOR");
+		new And("AND");
+		new Or("OR");
+		new Not("NOT");
+		new Ternary("?:");
+		new MathOp("+", Op.ADD);
+		new MathOp("-", Op.SUBTRACT);
+		new MathOp("*", Op.MULTIPLY);
+		new MathOp("/", Op.DIVIDE);
+		new MathOp("%", Op.MOD);
+		new CompOp("=", COp.EQUAL);
+		new CompOp("!=", COp.NOTEQUAL);
+		new CompOp("<=", COp.LESSEQ);
+		new CompOp(">=", COp.GREATEREQ);
+		new CompOp("<", COp.LESS);
+		new CompOp(">", COp.GREATER);
 		
-		for (Callable c : Interpreter.cacheFile("Natives.othsrc").values()) {
-			cache(c);
-		}
-	}
-	
-	private static void cache(Callable c) {
-		calls.put(c.name(), c);
+		Interpreter.cacheFile("Natives.othsrc").values(); // Load natives file
 	}
 	
 	abstract static class Native extends Callable {
@@ -206,5 +207,22 @@ public class Natives extends CallableContainer {
 			}
 		}
 	}
-	
+	static class CompOp extends Native {
+		final COp op;
+		public CompOp(String name, COp op) {
+			super(	name,
+					new Datatype[]{Datatype.Numeric, Datatype.implicit(0)},
+					new Datatype[]{Datatype.Bool});
+			this.op = op;
+		}
+		public void call(Pipe[] ins, Pipe[] outs) {
+			outs[0].set(CompOps.op(op, 
+					ins[0].get(), 
+					ins[1].get(), 
+					ins[0].type(), 
+					ins[1].type()
+					), Datatype.Bool, c.getLine());
+			
+		}
+	}
 }
