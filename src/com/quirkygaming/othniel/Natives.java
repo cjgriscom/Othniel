@@ -2,9 +2,6 @@ package com.quirkygaming.othniel;
 
 import java.util.Scanner;
 
-import com.quirkygaming.othniel.MathOps.Op;
-
-
 public class Natives extends CallableContainer {
 	
 	private static Scanner in = new Scanner(System.in);

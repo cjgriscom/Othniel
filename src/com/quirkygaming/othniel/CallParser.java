@@ -27,7 +27,7 @@ public class CallParser {
 		return calls;
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) { // Test method
 		String line = "[pipe]a s[ss] [s]s[]a[var33, l] [a]asd[b]op[p]";
 		
 		CallParser parser = new CallParser(line, 123, false);
@@ -239,35 +239,5 @@ public class CallParser {
 		}
 		return components;
 	}
-	
-	/*private CallParser(String line, int lineN) {
-		ParseError.validate(! line.isEmpty(), lineN, "Expected [ or call name");
-		
-		if (line.charAt(0) == '[') { // Contains inParams 
-			
-			int endBracket = line.indexOf(']');
-			ParseError.validate(endBracket >= 1, lineN, "Expected ]");
-			
-			String inParamString = line.substring(1, endBracket).trim();
-			if (!inParamString.isEmpty()) inParams = inParamString.split(",");
-			
-			line = line.substring(endBracket+1); // Trim line to after endbracket
-			
-		}
-		if (line.contains("[")) {
-			int startBracket = line.indexOf('[');
-			int endBracket = line.indexOf(']');
-			
-			ParseError.validate(endBracket != -1 && endBracket > startBracket, lineN, "Expected ]");
-			
-			String outParamString = line.substring(startBracket + 1, endBracket).trim();
-			if (!outParamString.isEmpty()) outParams = outParamString.split(",");
-			
-			line = line.substring(0, startBracket); // Trim line to only contain call
-		}
-		
-		callName = line;
-		ParseError.validate(!callName.isEmpty(), lineN, "Empty call name");
-	}*/
 	
 }
