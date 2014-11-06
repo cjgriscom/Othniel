@@ -1,11 +1,8 @@
 static sequence [a:Bool, b:Bool]XNOR[c:Bool]
-	[a, b]XOR[c]
-	[c]NOT[c]
+	[a, b]XOR[c]NOT[c]
 
 static sequence [a:Bool, b:Bool]NAND[c:Bool]
-	[a, b]AND[c]
-	[c]NOT[c]
+	[a, b]AND[c]NOT[c]
 
 static sequence [a:Bool, b:Bool]NOR[c:Bool]
-	[a, b]OR[c]
-	[c]NOT[c]
+	[a, b]OR[c]NOT[c]

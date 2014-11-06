@@ -2,10 +2,10 @@ inline sequence test
 	[TRUE, 5]var[res]PRINTLN
 	[FALSE, 0]var[get]PRINTLN
 	
-	//["Enter two booleans: "]PRINT
-	//[FALSE]INPUT[bool1]
-	//[FALSE]INPUT[bool2]
-	//[bool1, bool2]printBooleanOps
+	["Enter two booleans: "]PRINT
+	[FALSE]INPUT[bool1]
+	[FALSE]INPUT[bool2]
+	[bool1, bool2]printBooleanOps
 	
 	["Enter two ints: "]PRINT
 	[0]INPUT[int1] [0]INPUT[int2]
@@ -16,24 +16,12 @@ static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 
 static sequence [bool1:Bool, bool2:Bool]printBooleanOps
-	[bool1, bool2]XOR[x]
-	["Result of XOR: "]PRINT
-	[x]PRINTLN
-	[bool1, bool2]AND[x]
-	["Result of AND: "]PRINT
-	[x]PRINTLN
-	[bool1, bool2]OR[x]
-	["Result of OR: "]PRINT
-	[x]PRINTLN
-	[bool1, bool2]XNOR[x]
-	["Result of XNOR: "]PRINT
-	[x]PRINTLN
-	[bool1, bool2]NAND[x]
-	["Result of NAND: "]PRINT
-	[x]PRINTLN
-	[bool1, bool2]NOR[x]
-	["Result of NOR: "]PRINT
-	[x]PRINTLN
+	[bool1, bool2]XOR[x]  ["Result of XOR: ", x]PRINTLN
+	[bool1, bool2]AND[x]  ["Result of AND: ", x]PRINTLN
+	[bool1, bool2]OR[x]   ["Result of OR: ", x]PRINTLN
+	[bool1, bool2]XNOR[x] ["Result of XNOR: ", x]PRINTLN
+	[bool1, bool2]NAND[x] ["Result of NAND: ", x]PRINTLN
+	[bool1, bool2]NOR[x]  ["Result of NOR: ", x]PRINTLN
 
 inline sequence [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
 	[a]:[newB]
