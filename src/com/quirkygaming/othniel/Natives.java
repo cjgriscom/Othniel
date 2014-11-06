@@ -2,6 +2,8 @@ package com.quirkygaming.othniel;
 
 import java.util.Scanner;
 
+import com.quirkygaming.othniel.MathOps.Op;
+
 public class Natives extends CallableContainer {
 	
 	private static Scanner in = new Scanner(System.in);
@@ -17,11 +19,11 @@ public class Natives extends CallableContainer {
 		cache(new Or("OR"));
 		cache(new Not("NOT"));
 		cache(new Ternary("?:"));
-		cache(new MathOp("+", MathOps.Op.ADD));
-		cache(new MathOp("-", MathOps.Op.SUBTRACT));
-		cache(new MathOp("*", MathOps.Op.MULTIPLY));
-		cache(new MathOp("/", MathOps.Op.DIVIDE));
-		cache(new MathOp("%", MathOps.Op.MOD));
+		cache(new MathOp("+", Op.ADD));
+		cache(new MathOp("-", Op.SUBTRACT));
+		cache(new MathOp("*", Op.MULTIPLY));
+		cache(new MathOp("/", Op.DIVIDE));
+		cache(new MathOp("%", Op.MOD));
 		
 		for (Callable c : Interpreter.cacheFile("Natives.othsrc").values()) {
 			cache(c);
@@ -182,21 +184,26 @@ public class Natives extends CallableContainer {
 			outs[0].set((Boolean) ins[0].get() ? ins[1].get() : ins[2].get(), ins[1].type(), c.getLine());
 		}
 	}
+	static Object ZERO = new Byte((byte)0);
 	static class MathOp extends Native {
-		final MathOps.Op op;
-		public MathOp(String name, MathOps.Op op) {
+		final Op op;
+		public MathOp(String name, Op op) {
 			super(	name,
 					new Datatype[]{Datatype.Numeric, Datatype.implicit(0)},
 					new Datatype[]{Datatype.implicit(0)});
 			this.op = op;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set(MathOps.op(op, 
-					ins[0].get(), 
-					ins[1].get(), 
-					ins[0].type(), 
-					ins[1].type()
-					), ins[0].type(), c.getLine());
+			try {
+				outs[0].set(MathOps.op(op, 
+						ins[0].get(), 
+						ins[1].get(), 
+						ins[0].type(), 
+						ins[1].type()
+						), ins[0].type(), c.getLine());
+			} catch (ArithmeticException e) {
+				RuntimeError.throwIf(true, c.getLine(), e.getMessage());
+			}
 		}
 	}
 	
