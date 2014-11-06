@@ -23,10 +23,12 @@ public class Structure extends Callable {
 		this.outputs = outputs;
 		for (PipeDef pd : inputs) {
 			ParseError.throwIf(pd.type().isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
+			ParseError.throwIf(pipeDefs.containsKey(pd.getLabel()), lineN, "Duplicate pipe symbol: " + pd.getLabel());
 			pipeDefs.put(pd.getLabel(), pd);
 		}
 		for (PipeDef pd : outputs) {
 			ParseError.throwIf(pd.type().isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
+			ParseError.throwIf(pipeDefs.containsKey(pd.getLabel()), lineN, "Duplicate pipe symbol: " + pd.getLabel());
 			pipeDefs.put(pd.getLabel(), pd);
 		}
 	}
