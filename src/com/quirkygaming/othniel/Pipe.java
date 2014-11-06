@@ -22,10 +22,6 @@ public class Pipe extends PipeDef {
 		set(value, pipeType, lineN);
 	}
 	
-	public String getLabel() {
-		return label;
-	}
-	
 	private void set(Object object) {
 		this.value = object;
 	}
@@ -37,9 +33,5 @@ public class Pipe extends PipeDef {
 	
 	public Object get() {
 		return value;
-	}
-	
-	public Datatype type() {
-		return type;
 	}
 }

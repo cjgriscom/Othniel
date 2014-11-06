@@ -20,6 +20,11 @@ public abstract class PipeDef {
 		type = Datatype.fromExpression(expression.substring(colonPos + 1), inParams, lineN);	
 	}
 	
-	public abstract String getLabel();
-	public abstract Datatype type();
+	public String getLabel() {
+		return label;
+	}
+	
+	public Datatype type() {
+		return type;
+	}
 }
