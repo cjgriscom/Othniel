@@ -100,7 +100,7 @@ public class Datatype {
 		return 0;
 	}
 	
-	public static Datatype fromExpression(String exp, StructInput[] ins, boolean isInput, int lineN) {
+	public static Datatype fromExpression(String exp, StructInput[] ins, int lineN) {
 		exp = exp.trim();
 		if (knownTypes.containsKey(exp)) {
 			return knownTypes.get(exp);
