@@ -1,8 +1,6 @@
 inline sequence test
-	[TRUE, 5]var[res]
-	[res]PRINTLN
-	[FALSE, 0]var[get]
-	[get]PRINTLN
+	[TRUE, 5]var[res]PRINTLN
+	[FALSE, 0]var[get]PRINTLN
 	
 	//["Enter two booleans: "]PRINT
 	//[FALSE]INPUT[bool1]
@@ -10,14 +8,9 @@ inline sequence test
 	//[bool1, bool2]printBooleanOps
 	
 	["Enter two ints: "]PRINT
-	[0]INPUT[int1]
-	[0]INPUT[int2]
-	[int1,int2]SWAP[int1,int2]
-	[int1]PRINT
-	[" "]PRINT
-	[int2]PRINTLN
-	[int1, int2]-[onePlus2]
-	[onePlus2]PRINTLN
+	[0]INPUT[int1] [0]INPUT[int2]
+	[int1,int2]SWAP[int1,int2] [int1, int2]+[onePlus2]
+	[int1, "-", int2, "=", onePlus2]PRINTLN
 
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]

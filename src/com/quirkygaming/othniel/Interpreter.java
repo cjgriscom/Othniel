@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import com.quirkygaming.othniel.CallParser.ParsedCall;
+
 public class Interpreter {
 	
 	public static void main(String[] args) { //TODO remove extra spaces in tokenization
@@ -31,7 +33,13 @@ public class Interpreter {
 				if (!(line.startsWith("inline") || line.startsWith("static"))) { //TODO ew
 					if (!headersOnly) {
 						ParseError.validate(newStructure != null, lineN, "Expected structure header"); // Enforce header if one hasn't occured yet
-						newStructure.callList.add(parseCall(newStructure, line, lineN));
+						
+						CallParser parser = new CallParser(line, lineN, true);
+						
+						for (ParsedCall call : parser.getCalls()) { // Loop through each individual call and add to structure
+							newStructure.callList.add(parseCall(call, newStructure, line, lineN));
+						}
+						
 					}
 				} else {
 					// Header
@@ -86,7 +94,7 @@ public class Interpreter {
 		
 		ParseError.validate(rm != null, lineN, "Malformed callable header");
 		
-		CallParser call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN);
+		CallParser.ParsedCall call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN, false).firstCall();
 		
 		if (exists) return (Structure)CallableContainer.getCallable(call.callName);
 		else {
@@ -102,18 +110,17 @@ public class Interpreter {
 		}
 	}
 	
-	public static CachedCall parseCall(Structure structure, String line, int lineN) {
-		CallParser cp = new CallParser(line, lineN);
+	public static CachedCall parseCall(ParsedCall call, Structure structure, String line, int lineN) {
 
-		Pipe inPipes[] = new Pipe[cp.inParams.length];
-		Pipe outPipes[] = new Pipe[cp.outParams.length];
+		Pipe inPipes[] = new Pipe[call.inParams.length];
+		Pipe outPipes[] = new Pipe[call.outParams.length];
 
-		Callable nativ = Natives.getCallable(cp.callName);
-		ParseError.validate(nativ != null, lineN, "Call not found: " + cp.callName);
+		Callable nativ = Natives.getCallable(call.callName);
+		ParseError.validate(nativ != null, lineN, "Call not found: " + call.callName);
 		CachedCall currentCall = new CachedCall(inPipes, nativ, outPipes, lineN);
 		
-		for (int i = 0; i < cp.inParams.length; i++) {
-			String token = cp.inParams[i].trim();
+		for (int i = 0; i < call.inParams.length; i++) {
+			String token = call.inParams[i].trim();
 			Pipe cnst = Constants.matchConstant(token, lineN);
 			if (cnst == null) {
 				ParseError.validate(structure.pipeDefs.containsKey(token), lineN, "Symbol not recognized: " + token);
@@ -127,8 +134,8 @@ public class Interpreter {
 			}
 		}
 		
-		for (int i = 0; i < cp.outParams.length; i++) {
-			String token = cp.outParams[i].trim();
+		for (int i = 0; i < call.outParams.length; i++) {
+			String token = call.outParams[i].trim();
 			
 			if (structure.pipeDefs.containsKey(token)) {
 				if (structure.pipeDefs.get(token) instanceof Pipe) {

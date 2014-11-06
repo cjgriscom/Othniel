@@ -119,7 +119,9 @@ public class Natives extends CallableContainer {
 			this.newLine = newLine;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			System.out.print(ins[0].get());
+			for (Pipe p : ins) {
+				System.out.print(p.get());
+			}
 			if (newLine) System.out.println();
 		}
 	}
