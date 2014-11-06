@@ -47,10 +47,13 @@ public class CallParser {
 		}
 	}
 	
-	public CallParser(String line, int lineN, boolean allowMultipleCalls) {
+	public CallParser(String line, int lineN, boolean isHeader) {
 		ArrayList<Component> components = separateComponents(line, lineN);
 		processIntoCalls(line, components, lineN);
-		
+		if (isHeader) {
+			ParseError.validate(size() == 1, lineN, 
+					"Found " + size() + " definitions in header; 1 expected");
+		}
 	}
 	
 	final int PARAMETER = 1;

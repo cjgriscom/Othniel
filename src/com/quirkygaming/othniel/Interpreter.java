@@ -34,7 +34,7 @@ public class Interpreter {
 					if (!headersOnly) {
 						ParseError.validate(newStructure != null, lineN, "Expected structure header"); // Enforce header if one hasn't occured yet
 						
-						CallParser parser = new CallParser(line, lineN, true);
+						CallParser parser = new CallParser(line, lineN, false);
 						
 						for (ParsedCall call : parser.getCalls()) { // Loop through each individual call and add to structure
 							newStructure.callList.add(parseCall(call, newStructure, line, lineN));
@@ -94,7 +94,7 @@ public class Interpreter {
 		
 		ParseError.validate(rm != null, lineN, "Malformed callable header");
 		
-		CallParser.ParsedCall call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN, false).firstCall();
+		CallParser.ParsedCall call = new CallParser(line.substring(splitInfo[0].length() + splitInfo[1].length() + 2).trim(), lineN, true).firstCall();
 		
 		if (exists) return (Structure)CallableContainer.getCallable(call.callName);
 		else {
