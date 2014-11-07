@@ -76,69 +76,69 @@ public class MathOps {
 		return null;
 	}
 	
-	public static Double op(Op o, Double num1, Double num2) {
+	public static double op(Op o, double num1, double num2) {
 		switch (o) {
 			case ADD: return num1 + num2;
 			case SUBTRACT: return num1 - num2;
 			case MULTIPLY: return num1 * num2;
 			case DIVIDE: return num1 / num2;
 			case MOD: return num1 % num2;
-			default: return null;
+			default: return 0d;
 		}
 	}
 	
-	public static Float op(Op o, Float num1, Float num2) {
+	public static float op(Op o, float num1, float num2) {
 		switch (o) {
 			case ADD: return num1 + num2;
 			case SUBTRACT: return num1 - num2;
 			case MULTIPLY: return num1 * num2;
 			case DIVIDE: return num1 / num2;
 			case MOD: return num1 % num2;
-			default: return null;
+			default: return 0f;
 		}
 	}
 	
-	public static Long op(Op o, Long num1, Long num2) {
+	public static long op(Op o, long num1, long num2) {
 		switch (o) {
 			case ADD: return num1 + num2;
 			case SUBTRACT: return num1 - num2;
 			case MULTIPLY: return num1 * num2;
 			case DIVIDE: return num1 / num2;
 			case MOD: return num1 % num2;
-			default: return null;
+			default: return 0L;
 		}
 	}
 	
-	public static Integer op(Op o, Integer num1, Integer num2) {
+	public static int op(Op o, int num1, int num2) {
 		switch (o) {
 			case ADD: return num1 + num2;
 			case SUBTRACT: return num1 - num2;
 			case MULTIPLY: return num1 * num2;
 			case DIVIDE: return num1 / num2;
 			case MOD: return num1 % num2;
-			default: return null;
+			default: return 0;
 		}
 	}
 	
-	public static Short op(Op o, Short num1, Short num2) {
+	public static short op(Op o, short num1, short num2) {
 		switch (o) {
 			case ADD: return (short) (num1 + num2);
 			case SUBTRACT: return (short) (num1 - num2);
 			case MULTIPLY: return (short) (num1 * num2);
 			case DIVIDE: return (short) (num1 / num2);
 			case MOD: return (short) (num1 % num2);
-			default: return null;
+			default: return 0;
 		}
 	}
 	
-	public static Byte op(Op o, Byte num1, Byte num2) {
+	public static byte op(Op o, byte num1, byte num2) {
 		switch (o) {
 			case ADD: return (byte) (num1 + num2);
 			case SUBTRACT: return (byte) (num1 - num2);
 			case MULTIPLY: return (byte) (num1 * num2);
 			case DIVIDE: return (byte) (num1 / num2);
 			case MOD: return (byte) (num1 % num2);
-			default: return null;
+			default: return 0;
 		}
 	}
 }
