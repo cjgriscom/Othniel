@@ -136,7 +136,7 @@ public class Natives {
 		public Assign(String name) {
 			super(	name,
 					new StructInput[]{new StructInput(new UndefinedPipe("source", Datatype.Anything))},
-					new StructOutput[]{new StructOutput(new UndefinedPipe("destination", Datatype.Anything))});
+					new StructOutput[]{new StructOutput(new UndefinedPipe("destination", 0, Datatype.Anything))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			outs[0].set(ins[0], c.getLine());
