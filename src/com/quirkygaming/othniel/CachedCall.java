@@ -1,5 +1,7 @@
 package com.quirkygaming.othniel;
 
+import com.quirkygaming.othniel.pipes.Pipe;
+
 public class CachedCall {
 	private Pipe[] defIns;
 	private Pipe[] defOuts;

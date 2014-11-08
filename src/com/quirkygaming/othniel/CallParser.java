@@ -2,6 +2,8 @@ package com.quirkygaming.othniel;
 
 import java.util.ArrayList;
 
+import com.quirkygaming.othniel.pipes.GarbagePipe;
+
 public class CallParser {
 	
 	private ArrayList<ParsedCall> calls = new ArrayList<ParsedCall>();

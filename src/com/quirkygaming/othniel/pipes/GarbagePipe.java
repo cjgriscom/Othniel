@@ -1,4 +1,6 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
+
+import com.quirkygaming.othniel.Datatype;
 
 public class GarbagePipe extends Pipe {
 	

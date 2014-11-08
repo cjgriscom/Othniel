@@ -4,6 +4,10 @@ import java.util.Scanner;
 
 import com.quirkygaming.othniel.CompOps.COp;
 import com.quirkygaming.othniel.MathOps.Op;
+import com.quirkygaming.othniel.pipes.BoolPipe;
+import com.quirkygaming.othniel.pipes.NumericPipe;
+import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.StringPipe;
 
 public class Natives {
 	

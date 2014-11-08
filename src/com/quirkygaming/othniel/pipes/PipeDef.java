@@ -1,4 +1,7 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
+
+import com.quirkygaming.othniel.Datatype;
+import com.quirkygaming.othniel.ParseError;
 
 public abstract class PipeDef {
 	protected final String label;

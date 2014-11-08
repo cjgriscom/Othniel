@@ -1,6 +1,10 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
 
 import static com.quirkygaming.othniel.Datatype.*;
+
+import com.quirkygaming.othniel.CompOps;
+import com.quirkygaming.othniel.Datatype;
+import com.quirkygaming.othniel.MathOps;
 
 public abstract class NumericPipe extends Pipe {
 	
@@ -13,10 +17,10 @@ public abstract class NumericPipe extends Pipe {
 	
 	// Pipe classes
 	public static class DoublePipe extends NumericPipe {
-		double value;
+		public double value;
 	
-		DoublePipe(String label) {super(label, Datatype.Double);}
-		DoublePipe(String label, double value) {this(label); this.value = value;}
+		public DoublePipe(String label) {super(label, Datatype.Double);}
+		public DoublePipe(String label, double value) {this(label); this.value = value;}
 	
 		@Override
 		void set(Pipe otherPipe) {
@@ -52,10 +56,10 @@ public abstract class NumericPipe extends Pipe {
 	}
 
 	public static class SinglePipe extends NumericPipe {
-		float value;
+		public float value;
 	
-		SinglePipe(String label) {super(label, Datatype.Single);}
-		SinglePipe(String label, float value) {this(label); this.value = value;}
+		public SinglePipe(String label) {super(label, Datatype.Single);}
+		public SinglePipe(String label, float value) {this(label); this.value = value;}
 	
 		@Override
 		void set(Pipe otherPipe) {
@@ -91,10 +95,10 @@ public abstract class NumericPipe extends Pipe {
 	}
 
 	public static class I64Pipe extends NumericPipe {
-		long value;
+		public long value;
 	
-		I64Pipe(String label) {super(label, Datatype.I64);}
-		I64Pipe(String label, long value) {this(label); this.value = value;}
+		public I64Pipe(String label) {super(label, Datatype.I64);}
+		public I64Pipe(String label, long value) {this(label); this.value = value;}
 	
 		@Override
 		void set(Pipe otherPipe) {
@@ -130,10 +134,10 @@ public abstract class NumericPipe extends Pipe {
 	}
 
 	public static class I32Pipe extends NumericPipe {
-		int value;
+		public int value;
 	
-		I32Pipe(String label) {super(label, Datatype.I32);}
-		I32Pipe(String label, int value) {this(label); this.value = value;}
+		public I32Pipe(String label) {super(label, Datatype.I32);}
+		public I32Pipe(String label, int value) {this(label); this.value = value;}
 	
 		@Override
 		void set(Pipe otherPipe) {
@@ -169,10 +173,10 @@ public abstract class NumericPipe extends Pipe {
 	}
 
 	public static class I16Pipe extends NumericPipe {
-		short value;
+		public short value;
 	
-		I16Pipe(String label) {super(label, Datatype.I16);}
-		I16Pipe(String label, short value) {this(label); this.value = value;}
+		public I16Pipe(String label) {super(label, Datatype.I16);}
+		public I16Pipe(String label, short value) {this(label); this.value = value;}
 	
 		@Override
 		void set(Pipe otherPipe) {
@@ -208,10 +212,10 @@ public abstract class NumericPipe extends Pipe {
 	}
 
 	public static class I8Pipe extends NumericPipe {
-		byte value;
+		public byte value;
 	
-		I8Pipe(String label) {super(label, Datatype.I8);}
-		I8Pipe(String label, byte value) {this(label); this.value = value;}
+		public I8Pipe(String label) {super(label, Datatype.I8);}
+		public I8Pipe(String label, byte value) {this(label); this.value = value;}
 	
 		@Override
 		void set(Pipe otherPipe) {

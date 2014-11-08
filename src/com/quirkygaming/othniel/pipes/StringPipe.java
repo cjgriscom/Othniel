@@ -1,10 +1,12 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
+
+import com.quirkygaming.othniel.Datatype;
 
 public class StringPipe extends Pipe {
 	
-	String value;
+	public String value;
 	
-	protected StringPipe(String label) {
+	public StringPipe(String label) {
 		super(label, Datatype.String);
 	}
 

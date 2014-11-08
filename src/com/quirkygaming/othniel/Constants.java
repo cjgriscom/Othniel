@@ -1,5 +1,10 @@
 package com.quirkygaming.othniel;
 
+import com.quirkygaming.othniel.pipes.BoolPipe;
+import com.quirkygaming.othniel.pipes.NumericPipe;
+import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.StringPipe;
+
 public class Constants {
 	public static Pipe matchConstant(String s, int lineN) {
 		if (s.equals("TRUE")) {

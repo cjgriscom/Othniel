@@ -1,4 +1,7 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
+
+import com.quirkygaming.othniel.CachedCall;
+import com.quirkygaming.othniel.Datatype;
 
 public abstract class Pipe extends PipeDef {
 	

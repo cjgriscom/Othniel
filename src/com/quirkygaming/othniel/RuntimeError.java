@@ -1,5 +1,7 @@
 package com.quirkygaming.othniel;
 
+import com.quirkygaming.othniel.pipes.Pipe;
+
 public class RuntimeError {
 	
 	public static void checkTypes(Pipe p1, Pipe p2, CachedCall call) {

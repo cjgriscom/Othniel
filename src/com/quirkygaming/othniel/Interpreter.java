@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import com.quirkygaming.othniel.CallParser.ParsedCall;
+import com.quirkygaming.othniel.pipes.GarbagePipe;
+import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.StructInput;
+import com.quirkygaming.othniel.pipes.StructOutput;
+import com.quirkygaming.othniel.pipes.UndefinedPipe;
 
 public class Interpreter {
 	

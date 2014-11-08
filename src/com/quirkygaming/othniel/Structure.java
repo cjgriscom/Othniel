@@ -3,6 +3,12 @@ package com.quirkygaming.othniel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.PipeDef;
+import com.quirkygaming.othniel.pipes.StructInput;
+import com.quirkygaming.othniel.pipes.StructOutput;
+import com.quirkygaming.othniel.pipes.UndefinedPipe;
+
 public class Structure extends Callable {
 	
 	ArrayList<CachedCall> callList = new ArrayList<CachedCall>();
@@ -40,9 +46,9 @@ public class Structure extends Callable {
 		for (int i = 0; i < array.length; i++) {
 			Object object = array[i];
 			if (object instanceof StructInput) {
-				typeArray[i] = ((StructInput) object).type;
+				typeArray[i] = ((StructInput) object).type();
 			} else {
-				typeArray[i] = ((StructOutput) object).type;
+				typeArray[i] = ((StructOutput) object).type();
 			}
 		}
 		return typeArray;

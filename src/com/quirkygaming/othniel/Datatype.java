@@ -2,6 +2,12 @@ package com.quirkygaming.othniel;
 
 import java.util.HashMap;
 
+import com.quirkygaming.othniel.pipes.BoolPipe;
+import com.quirkygaming.othniel.pipes.NumericPipe;
+import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.StringPipe;
+import com.quirkygaming.othniel.pipes.StructInput;
+
 public class Datatype {
 
 	static final HashMap<String, Datatype> knownTypes = new HashMap<String, Datatype>();
@@ -118,7 +124,7 @@ public class Datatype {
 			String implicitPipe = exp.substring(7).trim();
 			ParseError.validate(!implicitPipe.isEmpty(), lineN, "typeof requires a referenced pipe");
 			for (int i = 0; i < ins.length; i++) {
-				String testPipe = ins[i].label;
+				String testPipe = ins[i].getLabel();
 				if (testPipe.trim().equals(implicitPipe.trim())) return implicit(i); // Search for a referenced pipe
 			}
 			ParseError.validate(false, lineN, "typeof expression could not be evaluated for " + implicitPipe);

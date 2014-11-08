@@ -1,4 +1,4 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
 
 public class StructOutput extends PipeDef {
 	

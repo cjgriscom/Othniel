@@ -2,6 +2,8 @@ package com.quirkygaming.othniel;
 
 import java.util.HashMap;
 
+import com.quirkygaming.othniel.pipes.Pipe;
+
 
 public abstract class Callable {
 	

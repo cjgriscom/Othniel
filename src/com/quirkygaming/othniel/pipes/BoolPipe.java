@@ -1,10 +1,12 @@
-package com.quirkygaming.othniel;
+package com.quirkygaming.othniel.pipes;
+
+import com.quirkygaming.othniel.Datatype;
 
 public class BoolPipe extends Pipe {
 	
-	boolean value;
+	public boolean value;
 	
-	protected BoolPipe(String label) {
+	public BoolPipe(String label) {
 		super(label, Datatype.Bool);
 	}
 
