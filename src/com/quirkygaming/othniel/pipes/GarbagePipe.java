@@ -1,13 +1,11 @@
 package com.quirkygaming.othniel.pipes;
 
-import com.quirkygaming.othniel.Datatype;
-
-public class GarbagePipe extends Pipe {
+public class GarbagePipe extends UndefinedPipe {
 	
 	public static GarbagePipe INSTANCE = new GarbagePipe();
 	
 	private GarbagePipe() {
-		super("^", Datatype.Anything);
+		super("^", false);
 	}
 	
 	public void set(Pipe otherPipe) { // Absorb set
@@ -18,4 +16,7 @@ public class GarbagePipe extends Pipe {
 	public String toString() {
 		return "GARBAGE PIPE";
 	}
+
+	@Override
+	public boolean isAbstract() {return true;}
 }

@@ -13,7 +13,7 @@ inline sequence test
 	["Enter two ints: "]PRINT
 	[0]INPUT[int1] [0]INPUT[int2]
 	[int1,int2]SWAP[int1,int2]
-	[int1, "+", int2, "="]PRINT [int1, int2, int1]+[>]PRINTLN // TODO really need signature checks
+	[int1, "+", int2, "="]PRINT [int1, int2, ""]+[>]PRINTLN // TODO really need signature checks
 	[int1, "-", int2, "="]PRINT [int1, int2]-[>]PRINTLN
 	[int1, "*", int2, "="]PRINT [int1, int2]*[>]PRINTLN
 	[int1, "/", int2, "="]PRINT [int1, int2]/[>]PRINTLN

@@ -6,8 +6,12 @@ import com.quirkygaming.othniel.CompOps.COp;
 import com.quirkygaming.othniel.MathOps.Op;
 import com.quirkygaming.othniel.pipes.BoolPipe;
 import com.quirkygaming.othniel.pipes.NumericPipe;
+import com.quirkygaming.othniel.pipes.NumericPipe.*;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StringPipe;
+import com.quirkygaming.othniel.pipes.StructInput;
+import com.quirkygaming.othniel.pipes.StructOutput;
+import com.quirkygaming.othniel.pipes.UndefinedPipe;
 
 public class Natives {
 	
@@ -43,7 +47,7 @@ public class Natives {
 		
 		CachedCall c;
 		
-		public Native(String name, Datatype[] ins, Datatype[] outs) {
+		public Native(String name, StructInput[] ins, StructOutput[] outs) {
 			super(name, ins, outs);
 		}
 		
@@ -51,18 +55,16 @@ public class Natives {
 		public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
 			// Loop through ins and outs and if any are defined implicitly, verify their type correctness
 			for (int i = 0; i < ins.length; i++) {
-				Datatype reqType = ins[i];
-				if (reqType.isImplicit()) reqType = reqType.getImplicitType(runtimeIns[i].getLabel(), c);
+				Pipe reqType = ins[i].definition();
+				if (reqType.isImplicit()) reqType = ins[i].getImplicitType(runtimeIns[i].getLabel(), c);
 				else continue;
-				Datatype runtimeType = runtimeIns[i].type();
-				Datatype.checkCompat(runtimeType, reqType, c.getLine());
+				Pipe.checkCompat(runtimeIns[i], reqType, c.getLine());
 			}
 			for (int i = 0; i < outs.length; i++) {
-				Datatype reqType = outs[i];
-				if (reqType.isImplicit()) reqType = reqType.getImplicitType(runtimeOuts[i].getLabel(), c);
+				Pipe reqType = outs[i].definition();
+				if (reqType.isImplicit()) reqType = outs[i].getImplicitType(runtimeOuts[i].getLabel(), c);
 				else continue;
-				Datatype runtimeType = runtimeOuts[i].type();
-				Datatype.checkCompat(reqType, runtimeType, c.getLine()); // TODO verify order
+				Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
 			}
 			this.c = c;
 			call(runtimeIns,runtimeOuts); // Forward to actual natives
@@ -75,25 +77,25 @@ public class Natives {
 	static class Input extends Native {
 		public Input(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Anything},
-					new Datatype[]{Datatype.implicit(0)});
+					new StructInput[]{new StructInput(new UndefinedPipe("inputType", false))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			if (ins[0].type() == Datatype.I8) {
+			if (ins[0] instanceof I8Pipe) {
 				((NumericPipe.I8Pipe)outs[0]).value = in.nextByte();
-			} else if (ins[0].type() == Datatype.I16) {
+			} else if (ins[0] instanceof I16Pipe) {
 				((NumericPipe.I16Pipe)outs[0]).value = in.nextShort();
-			} else if (ins[0].type() == Datatype.I32) {
+			} else if (ins[0] instanceof I32Pipe) {
 				((NumericPipe.I32Pipe)outs[0]).value = in.nextInt();
-			} else if (ins[0].type() == Datatype.I64) {
+			} else if (ins[0] instanceof I64Pipe) {
 				((NumericPipe.I64Pipe)outs[0]).value = in.nextLong();
-			} else if (ins[0].type() == Datatype.Single) {
+			} else if (ins[0] instanceof SinglePipe) {
 				((NumericPipe.SinglePipe)outs[0]).value = in.nextFloat();
-			} else if (ins[0].type() == Datatype.Double) {
+			} else if (ins[0] instanceof DoublePipe) {
 				((NumericPipe.DoublePipe)outs[0]).value = in.nextDouble();
-			} else if (ins[0].type() == Datatype.String) {
+			} else if (ins[0] instanceof StringPipe) {
 				((StringPipe)outs[0]).value = in.next();
-			} else if (ins[0].type() == Datatype.Bool) {
+			} else if (ins[0] instanceof BoolPipe) {
 				((BoolPipe)outs[0]).value = in.nextBoolean();
 			} else {
 				RuntimeError.throwIf(true, c.getLine(), ins[0].type() + " not supported for INPUT");
@@ -103,8 +105,8 @@ public class Natives {
 	static class InputLine extends Native {
 		public InputLine(String name) {
 			super(	name,
-					new Datatype[0],
-					new Datatype[]{Datatype.String});
+					new StructInput[0],
+					new StructOutput[]{new StructOutput(new StringPipe("result"))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			((StringPipe)outs[0]).value = in.nextLine();
@@ -114,8 +116,8 @@ public class Natives {
 		boolean newLine;
 		public Print(boolean newLine, String name) {
 			super(	name,
-					new Datatype[]{Datatype.Anything},
-					new Datatype[0]);
+					new StructInput[]{new StructInput(new UndefinedPipe("value", false))},
+					new StructOutput[0]);
 			this.newLine = newLine;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
@@ -128,8 +130,8 @@ public class Natives {
 	static class Assign extends Native {
 		public Assign(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Anything},
-					new Datatype[]{Datatype.implicit(0)});
+					new StructInput[]{new StructInput(new UndefinedPipe("source", false))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("destination", 0))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			outs[0].set(ins[0], c.getLine());
@@ -138,8 +140,8 @@ public class Natives {
 	static class Xor extends Native {
 		public Xor(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Bool, Datatype.Bool},
-					new Datatype[]{Datatype.Bool});
+					new StructInput[]{new StructInput(new BoolPipe("a")), new StructInput(new BoolPipe("b"))},
+					new StructOutput[]{new StructOutput(new BoolPipe("c"))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			((BoolPipe)ins[0]).xor((BoolPipe)ins[1], (BoolPipe)outs[0]);
@@ -148,8 +150,8 @@ public class Natives {
 	static class And extends Native {
 		public And(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Bool, Datatype.Bool},
-					new Datatype[]{Datatype.Bool});
+					new StructInput[]{new StructInput(new BoolPipe("a")), new StructInput(new BoolPipe("b"))},
+					new StructOutput[]{new StructOutput(new BoolPipe("c"))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			((BoolPipe)ins[0]).and((BoolPipe)ins[1], (BoolPipe)outs[0]);
@@ -158,8 +160,8 @@ public class Natives {
 	static class Or extends Native {
 		public Or(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Bool, Datatype.Bool},
-					new Datatype[]{Datatype.Bool});
+					new StructInput[]{new StructInput(new BoolPipe("a")), new StructInput(new BoolPipe("b"))},
+					new StructOutput[]{new StructOutput(new BoolPipe("c"))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			((BoolPipe)ins[0]).or((BoolPipe)ins[1], (BoolPipe)outs[0]);
@@ -168,8 +170,8 @@ public class Natives {
 	static class Not extends Native {
 		public Not(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Bool},
-					new Datatype[]{Datatype.Bool});
+					new StructInput[]{new StructInput(new BoolPipe("a"))},
+					new StructOutput[]{new StructOutput(new BoolPipe("b"))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			((BoolPipe)ins[0]).not((BoolPipe)outs[0]);
@@ -178,8 +180,10 @@ public class Natives {
 	static class Ternary extends Native {
 		public Ternary(String name) {
 			super(	name,
-					new Datatype[]{Datatype.Bool, Datatype.Anything, Datatype.implicit(1)},
-					new Datatype[]{Datatype.implicit(1)});
+					new StructInput[]{new StructInput(new BoolPipe("condition")), 
+					new StructInput(new UndefinedPipe("trueResult", false)), 
+					new StructInput(new UndefinedPipe("falseResult", 1))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 1))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			boolean condition = ((BoolPipe)ins[0]).value;
@@ -191,13 +195,15 @@ public class Natives {
 		final Op op;
 		public MathOp(String name, Op op) {
 			super(	name,
-					new Datatype[]{Datatype.Numeric, Datatype.Numeric},
-					new Datatype[]{Datatype.implicit(0)});
+					new StructInput[]{
+					new StructInput(new UndefinedPipe("a", true)),
+					new StructInput(new UndefinedPipe("b", true))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0))});
 			this.op = op;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			try {
-				if (ins[0].type().isStrongerThan(ins[1].type())) {
+				if (((NumericPipe)ins[0]).isStrongerThan((NumericPipe)ins[1])) {
 					((NumericPipe) ins[0]).op(op, true, (NumericPipe)ins[1], (NumericPipe)outs[0]);
 				} else {
 					((NumericPipe) ins[1]).op(op, false, (NumericPipe)ins[0], (NumericPipe)outs[0]);
@@ -211,12 +217,14 @@ public class Natives {
 		final COp op;
 		public CompOp(String name, COp op) {
 			super(	name,
-					new Datatype[]{Datatype.Numeric, Datatype.Numeric},
-					new Datatype[]{Datatype.Bool});
+					new StructInput[]{
+					new StructInput(new UndefinedPipe("a", true)),
+					new StructInput(new UndefinedPipe("b", true))},
+					new StructOutput[]{new StructOutput(new BoolPipe("result"))});
 			this.op = op;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			if (ins[0].type().isStrongerThan(ins[1].type())) {
+			if (((NumericPipe)ins[0]).isStrongerThan((NumericPipe)ins[1])) {
 				 ((BoolPipe)outs[0]).value = ((NumericPipe) ins[0]).comp(op, true, (NumericPipe)ins[1]);
 			} else {
 				 ((BoolPipe)outs[0]).value = ((NumericPipe) ins[1]).comp(op, false, (NumericPipe)ins[0]);

@@ -3,17 +3,19 @@ package com.quirkygaming.othniel;
 import java.util.HashMap;
 
 import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.StructInput;
+import com.quirkygaming.othniel.pipes.StructOutput;
 
 
 public abstract class Callable {
 	
 	static HashMap<String, Callable> callList = new HashMap<String, Callable>();
 	
-	protected Datatype[] ins;
-	protected Datatype[] outs;
+	public StructInput[] ins;
+	public StructOutput[] outs;
 	private final String name;
 	
-	public Callable(String name, Datatype[] ins, Datatype[] outs) {
+	public Callable(String name, StructInput[] ins, StructOutput[] outs) {
 		this.ins = ins;
 		this.outs = outs;
 		this.name = name;

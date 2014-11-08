@@ -29,4 +29,7 @@ public class BoolPipe extends Pipe {
 	public void or(BoolPipe other, BoolPipe target) {target.value = value || other.value;}
 	public void xor(BoolPipe other, BoolPipe target) {target.value = value ^ other.value;}
 	public void not(BoolPipe target) {target.value = !value;}
+
+	@Override
+	public boolean isAbstract() {return false;}
 }

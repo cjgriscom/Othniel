@@ -147,6 +147,7 @@ public class Interpreter {
 			} else {
 				inPipes[i] = cnst;
 			}
+			
 		}
 		
 		for (int i = 0; i < call.outParams.length; i++) {
@@ -168,7 +169,7 @@ public class Interpreter {
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
-				Pipe p = nativ.outs[i].newPipe(token, currentCall);
+				Pipe p = nativ.outs[i].getCopy(token, currentCall);
 				structure.pipeDefs.put(token, p);
 				outPipes[i] = p;
 			}
