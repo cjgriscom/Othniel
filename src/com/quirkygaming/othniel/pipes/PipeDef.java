@@ -13,6 +13,8 @@ public abstract class PipeDef {
 	
 	protected PipeDef() {}
 	
+	public abstract boolean isNumeric();
+	
 	public String getLabel() {
 		return label;
 	}

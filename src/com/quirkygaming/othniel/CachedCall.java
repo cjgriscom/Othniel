@@ -9,6 +9,7 @@ public class CachedCall {
 	public Pipe[] outs;
 	private Callable call;
 	private int lineN;
+	public CachedCall parent;
 	
 	public CachedCall(Pipe[] ins, Callable call, Pipe[] outs, int lineN) {
 		this.defIns = ins;

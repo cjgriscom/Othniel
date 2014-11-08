@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import com.quirkygaming.othniel.CallParser.ParsedCall;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
+import com.quirkygaming.othniel.pipes.Node;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
@@ -117,11 +118,16 @@ public class Interpreter {
 	}
 	
 	public static CachedCall parseCall(ParsedCall call, Structure structure, String line, int lineN, int callN) {
+		Callable nativ = Callable.getCallable(call.callName);
+
+		ParseError.validate(nativ != null, lineN, "Call not found: " + call.callName);
+
+		ParseError.validate(call.inParams.length == nativ.inSize() || nativ.inputsArbitrary(), lineN, "Number of inputs does not match");
+		ParseError.validate(call.outParams.length == nativ.outSize(), lineN, "Number of outputs does not match");
+		
 		Pipe inPipes[] = new Pipe[call.inParams.length];
 		Pipe outPipes[] = new Pipe[call.outParams.length];
-
-		Callable nativ = Callable.getCallable(call.callName);
-		ParseError.validate(nativ != null, lineN, "Call not found: " + call.callName);
+		
 		CachedCall currentCall = new CachedCall(inPipes, nativ, outPipes, lineN);
 		
 		int refInOccurance = 0; // For < and >
@@ -141,13 +147,17 @@ public class Interpreter {
 				ParseError.verifySymbolRecognized(structure.pipeDefs.containsKey(token), lineN, token);
 				if (structure.pipeDefs.get(token) instanceof Pipe) {
 					inPipes[i] = (Pipe)structure.pipeDefs.get(token);
-				} else {
-					inPipes[i] = new UndefinedPipe(structure.pipeDefs.get(token)); // The structure will handle the replacement
+				} else { //instanceof node
+					inPipes[i] = new UndefinedPipe((Node)structure.pipeDefs.get(token)); // The structure will handle the replacement
 				}
 			} else {
 				inPipes[i] = cnst;
 			}
-			
+			if (nativ.inputsArbitrary()) {
+				nativ.ins[0].checkCompatWith(inPipes[i], lineN, currentCall);
+			} else {
+				nativ.ins[i].checkCompatWith(inPipes[i], lineN, currentCall);
+			}
 		}
 		
 		for (int i = 0; i < call.outParams.length; i++) {
@@ -164,8 +174,8 @@ public class Interpreter {
 			} else if (structure.pipeDefs.containsKey(token)) {
 				if (structure.pipeDefs.get(token) instanceof Pipe) {
 					outPipes[i] = (Pipe)structure.pipeDefs.get(token);
-				} else {
-					outPipes[i] = new UndefinedPipe(structure.pipeDefs.get(token)); // The structure will handle the replacement
+				} else { //instanceof node
+					outPipes[i] = new UndefinedPipe((Node)structure.pipeDefs.get(token)); // The structure will handle the replacement
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
@@ -173,6 +183,7 @@ public class Interpreter {
 				structure.pipeDefs.put(token, p);
 				outPipes[i] = p;
 			}
+			nativ.outs[0].checkCompatWith(outPipes[i], lineN, currentCall);
 		}
 		return currentCall;
 		

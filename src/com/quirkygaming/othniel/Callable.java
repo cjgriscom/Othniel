@@ -12,6 +12,7 @@ public abstract class Callable {
 	static HashMap<String, Callable> callList = new HashMap<String, Callable>();
 	
 	public StructInput[] ins;
+	private boolean inputsArbitrary; // TODO automatic implicit reqs
 	public StructOutput[] outs;
 	private final String name;
 	
@@ -20,6 +21,11 @@ public abstract class Callable {
 		this.outs = outs;
 		this.name = name;
 		callList.put(name, this);
+	}
+	
+	public Callable(String name, StructInput[] ins, StructOutput[] outs, boolean inputsArbitrary) {
+		this(name, ins, outs);
+		this.inputsArbitrary = inputsArbitrary; // For natives like PRINT that take multiple args
 	}
 	
 	public static Callable getCallable(String callable) {
@@ -36,8 +42,9 @@ public abstract class Callable {
 	public int outSize() {
 		return outs.length;
 	}
-	public int size() {
-		return inSize() + outSize();
+	
+	public boolean inputsArbitrary() {
+		return inputsArbitrary;
 	}
 	
 	public abstract void call(Pipe[] ins, Pipe[] outs, CachedCall c);

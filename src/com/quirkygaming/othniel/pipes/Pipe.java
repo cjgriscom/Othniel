@@ -39,16 +39,17 @@ public abstract class Pipe extends PipeDef {
 		} else if (datatypeS.equals("String")) {
 			return new StringPipe(label);
 		} else if (datatypeS.equals("Anything")) {
-			return new UndefinedPipe(label, false);
+			return new UndefinedPipe(label, Datatype.Anything);
 		} else if (datatypeS.equals("Numeric")) {
-			return new UndefinedPipe(label, true);
+			return new UndefinedPipe(label, Datatype.Numeric);
 		} else if (datatypeS.startsWith("typeof ")) {
 			ParseError.validate(inParams != null, lineN, "typeof is not allowed in this context"); // for datatype constants
 			String implicitPipe = datatypeS.substring(7).trim();
 			ParseError.validate(!implicitPipe.isEmpty(), lineN, "typeof requires a referenced pipe");
 			for (int i = 0; i < inParams.length; i++) {
 				String testPipe = inParams[i].getLabel();
-				if (testPipe.trim().equals(implicitPipe.trim())) return new UndefinedPipe(label, i); // Search for a referenced pipe
+				if (testPipe.trim().equals(implicitPipe.trim())) 
+					return new UndefinedPipe(label, i, inParams[i].type()); // Search for a referenced pipe
 			}
 			ParseError.validate(false, lineN, "typeof expression could not be evaluated for " + implicitPipe);
 		} else {
@@ -67,7 +68,7 @@ public abstract class Pipe extends PipeDef {
 	public Pipe copy(CachedCall call) {
 		Pipe p;
 		if (this instanceof UndefinedPipe) {
-			p = ((UndefinedPipe)this).getImplicitType(label, call); // TODO move to undefinedpipe
+			p = ((UndefinedPipe)this).getImplicitReference(call); // TODO move to undefinedpipe
 		} else {
 			p = this;
 		}

@@ -51,18 +51,22 @@ public class Natives {
 			super(name, ins, outs);
 		}
 		
+		public Native(String name, StructInput[] ins, StructOutput[] outs, boolean inputsArbitrary) {
+			super(name, ins, outs, inputsArbitrary);
+		}
+		
 		@Override
 		public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
 			// Loop through ins and outs and if any are defined implicitly, verify their type correctness
 			for (int i = 0; i < ins.length; i++) {
 				Pipe reqType = ins[i].definition();
-				if (reqType.isImplicit()) reqType = ins[i].getImplicitType(runtimeIns[i].getLabel(), c);
+				if (reqType.isImplicit()) reqType = ins[i].getImplicitReference(c);
 				else continue;
 				Pipe.checkCompat(runtimeIns[i], reqType, c.getLine());
 			}
 			for (int i = 0; i < outs.length; i++) {
 				Pipe reqType = outs[i].definition();
-				if (reqType.isImplicit()) reqType = outs[i].getImplicitType(runtimeOuts[i].getLabel(), c);
+				if (reqType.isImplicit()) reqType = outs[i].getImplicitReference(c);
 				else continue;
 				Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
 			}
@@ -77,8 +81,8 @@ public class Natives {
 	static class Input extends Native {
 		public Input(String name) {
 			super(	name,
-					new StructInput[]{new StructInput(new UndefinedPipe("inputType", false))},
-					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0))});
+					new StructInput[]{new StructInput(new UndefinedPipe("inputType", Datatype.Anything))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0, Datatype.Anything))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			if (ins[0] instanceof I8Pipe) {
@@ -116,8 +120,9 @@ public class Natives {
 		boolean newLine;
 		public Print(boolean newLine, String name) {
 			super(	name,
-					new StructInput[]{new StructInput(new UndefinedPipe("value", false))},
-					new StructOutput[0]);
+					new StructInput[]{new StructInput(new UndefinedPipe("value", Datatype.Anything))},
+					new StructOutput[0],
+					true); // Arbitrary inputs
 			this.newLine = newLine;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
@@ -130,8 +135,8 @@ public class Natives {
 	static class Assign extends Native {
 		public Assign(String name) {
 			super(	name,
-					new StructInput[]{new StructInput(new UndefinedPipe("source", false))},
-					new StructOutput[]{new StructOutput(new UndefinedPipe("destination", 0))});
+					new StructInput[]{new StructInput(new UndefinedPipe("source", Datatype.Anything))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("destination", Datatype.Anything))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			outs[0].set(ins[0], c.getLine());
@@ -181,9 +186,9 @@ public class Natives {
 		public Ternary(String name) {
 			super(	name,
 					new StructInput[]{new StructInput(new BoolPipe("condition")), 
-					new StructInput(new UndefinedPipe("trueResult", false)), 
-					new StructInput(new UndefinedPipe("falseResult", 1))},
-					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 1))});
+					new StructInput(new UndefinedPipe("trueResult", Datatype.Anything)), 
+					new StructInput(new UndefinedPipe("falseResult", 1, Datatype.Anything))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 1, Datatype.Anything))});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			boolean condition = ((BoolPipe)ins[0]).value;
@@ -196,9 +201,9 @@ public class Natives {
 		public MathOp(String name, Op op) {
 			super(	name,
 					new StructInput[]{
-					new StructInput(new UndefinedPipe("a", true)),
-					new StructInput(new UndefinedPipe("b", true))},
-					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0))});
+					new StructInput(new UndefinedPipe("a", Datatype.Numeric)),
+					new StructInput(new UndefinedPipe("b", Datatype.Numeric))},
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0, Datatype.Numeric))});
 			this.op = op;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
@@ -218,8 +223,8 @@ public class Natives {
 		public CompOp(String name, COp op) {
 			super(	name,
 					new StructInput[]{
-					new StructInput(new UndefinedPipe("a", true)),
-					new StructInput(new UndefinedPipe("b", true))},
+					new StructInput(new UndefinedPipe("a", Datatype.Numeric)),
+					new StructInput(new UndefinedPipe("b", Datatype.Numeric))},
 					new StructOutput[]{new StructOutput(new BoolPipe("result"))});
 			this.op = op;
 		}
