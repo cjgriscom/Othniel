@@ -16,14 +16,14 @@ public class CachedCall {
 		this.call = call;
 		this.lineN = lineN;
 		this.ins = ins;
-		this.outs = outs; // TODO might not work... errrrg
+		this.outs = outs;
 	}
 
 	public void call() {
 		call.call(ins, outs, this);
 	}
 	
-	public void resetRuntime() { // Must be called by structure before run
+	public void resetRuntime() { // Must be called for inline structures before run
 		ins = defIns.clone();
 		outs = defOuts.clone();
 	}
