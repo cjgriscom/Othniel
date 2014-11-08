@@ -1,19 +1,38 @@
 package com.quirkygaming.othniel.pipes;
 
-import static com.quirkygaming.othniel.Datatype.*;
-
 import com.quirkygaming.othniel.CompOps;
 import com.quirkygaming.othniel.Datatype;
 import com.quirkygaming.othniel.MathOps;
 
 public abstract class NumericPipe extends Pipe {
 	
-	protected NumericPipe(String label, Datatype t) {
-		super(label, t);
+	protected NumericPipe(String label, Datatype type) {
+		super(label, type);
 	}
 	
 	public abstract void op(MathOps.Op o, boolean amIFirstOp, NumericPipe weaker, NumericPipe target);
 	public abstract boolean comp(CompOps.COp o, boolean amIFirstOp, NumericPipe weaker);
+	
+	@Override
+	public boolean isAbstract() {return false;}
+	
+	
+	public boolean isStrongerThan(NumericPipe other) {
+		return this.getRelStrength() > other.getRelStrength();
+	}
+	
+	private int getRelStrength() {
+		if (this instanceof DoublePipe) return 100; // Floats beat integers
+		if (this instanceof SinglePipe) return 99;
+		if (this instanceof I64Pipe) return 70; // Larger ints beat smaller ints
+		//if (this instanceof U64Pipe) return 65; // Signed beats unsigned
+		if (this instanceof I32Pipe) return 60;
+		//if (this.equals(U32)) return 55;
+		if (this instanceof I16Pipe) return 50;
+		//if (this.equals(U16)) return 45;
+		if (this instanceof I8Pipe) return 40;
+		return 0;
+	}
 	
 	// Pipe classes
 	public static class DoublePipe extends NumericPipe {
@@ -28,12 +47,12 @@ public abstract class NumericPipe extends Pipe {
 		}
 		
 		public static double cast(NumericPipe other) {
-			if (other.type().equals(Double)) return (double) ((DoublePipe) other).value;
-			if (other.type().equals(Single)) return (double) ((SinglePipe) other).value;
-			if (other.type().equals(I64)) return (double) ((I64Pipe) other).value;
-			if (other.type().equals(I32)) return (double) ((I32Pipe) other).value;
-			if (other.type().equals(I16)) return (double) ((I16Pipe) other).value;
-			if (other.type().equals(I8)) return (double) ((I8Pipe) other).value;
+			if (other instanceof DoublePipe) return (double) ((DoublePipe) other).value;
+			if (other instanceof SinglePipe) return (double) ((SinglePipe) other).value;
+			if (other instanceof I64Pipe) return (double) ((I64Pipe) other).value;
+			if (other instanceof I32Pipe) return (double) ((I32Pipe) other).value;
+			if (other instanceof I16Pipe) return (double) ((I16Pipe) other).value;
+			if (other instanceof I8Pipe) return (double) ((I8Pipe) other).value;
 			throw new RuntimeException("Should have casted by now.");
 		}
 	
@@ -67,12 +86,12 @@ public abstract class NumericPipe extends Pipe {
 		}
 		
 		public static float cast(NumericPipe other) {
-			if (other.type().equals(Double)) return (float) ((DoublePipe) other).value;
-			if (other.type().equals(Single)) return (float) ((SinglePipe) other).value;
-			if (other.type().equals(I64)) return (float) ((I64Pipe) other).value;
-			if (other.type().equals(I32)) return (float) ((I32Pipe) other).value;
-			if (other.type().equals(I16)) return (float) ((I16Pipe) other).value;
-			if (other.type().equals(I8)) return (float) ((I8Pipe) other).value;
+			if (other instanceof DoublePipe) return (float) ((DoublePipe) other).value;
+			if (other instanceof SinglePipe) return (float) ((SinglePipe) other).value;
+			if (other instanceof I64Pipe) return (float) ((I64Pipe) other).value;
+			if (other instanceof I32Pipe) return (float) ((I32Pipe) other).value;
+			if (other instanceof I16Pipe) return (float) ((I16Pipe) other).value;
+			if (other instanceof I8Pipe) return (float) ((I8Pipe) other).value;
 			throw new RuntimeException("Should have casted by now.");
 		}
 	
@@ -106,12 +125,12 @@ public abstract class NumericPipe extends Pipe {
 		}
 		
 		public static long cast(NumericPipe other) {
-			if (other.type().equals(Double)) return (long) ((DoublePipe) other).value;
-			if (other.type().equals(Single)) return (long) ((SinglePipe) other).value;
-			if (other.type().equals(I64)) return (long) ((I64Pipe) other).value;
-			if (other.type().equals(I32)) return (long) ((I32Pipe) other).value;
-			if (other.type().equals(I16)) return (long) ((I16Pipe) other).value;
-			if (other.type().equals(I8)) return (long) ((I8Pipe) other).value;
+			if (other instanceof DoublePipe) return (long) ((DoublePipe) other).value;
+			if (other instanceof SinglePipe) return (long) ((SinglePipe) other).value;
+			if (other instanceof I64Pipe) return (long) ((I64Pipe) other).value;
+			if (other instanceof I32Pipe) return (long) ((I32Pipe) other).value;
+			if (other instanceof I16Pipe) return (long) ((I16Pipe) other).value;
+			if (other instanceof I8Pipe) return (long) ((I8Pipe) other).value;
 			throw new RuntimeException("Should have casted by now.");
 		}
 	
@@ -145,12 +164,12 @@ public abstract class NumericPipe extends Pipe {
 		}
 		
 		public static int cast(NumericPipe other) {
-			if (other.type().equals(Double)) return (int) ((DoublePipe) other).value;
-			if (other.type().equals(Single)) return (int) ((SinglePipe) other).value;
-			if (other.type().equals(I64)) return (int) ((I64Pipe) other).value;
-			if (other.type().equals(I32)) return (int) ((I32Pipe) other).value;
-			if (other.type().equals(I16)) return (int) ((I16Pipe) other).value;
-			if (other.type().equals(I8)) return (int) ((I8Pipe) other).value;
+			if (other instanceof DoublePipe) return (int) ((DoublePipe) other).value;
+			if (other instanceof SinglePipe) return (int) ((SinglePipe) other).value;
+			if (other instanceof I64Pipe) return (int) ((I64Pipe) other).value;
+			if (other instanceof I32Pipe) return (int) ((I32Pipe) other).value;
+			if (other instanceof I16Pipe) return (int) ((I16Pipe) other).value;
+			if (other instanceof I8Pipe) return (int) ((I8Pipe) other).value;
 			throw new RuntimeException("Should have casted by now.");
 		}
 	
@@ -184,12 +203,12 @@ public abstract class NumericPipe extends Pipe {
 		}
 		
 		public static short cast(NumericPipe other) {
-			if (other.type().equals(Double)) return (short) ((DoublePipe) other).value;
-			if (other.type().equals(Single)) return (short) ((SinglePipe) other).value;
-			if (other.type().equals(I64)) return (short) ((I64Pipe) other).value;
-			if (other.type().equals(I32)) return (short) ((I32Pipe) other).value;
-			if (other.type().equals(I16)) return (short) ((I16Pipe) other).value;
-			if (other.type().equals(I8)) return (short) ((I8Pipe) other).value;
+			if (other instanceof DoublePipe) return (short) ((DoublePipe) other).value;
+			if (other instanceof SinglePipe) return (short) ((SinglePipe) other).value;
+			if (other instanceof I64Pipe) return (short) ((I64Pipe) other).value;
+			if (other instanceof I32Pipe) return (short) ((I32Pipe) other).value;
+			if (other instanceof I16Pipe) return (short) ((I16Pipe) other).value;
+			if (other instanceof I8Pipe) return (short) ((I8Pipe) other).value;
 			throw new RuntimeException("Should have casted by now.");
 		}
 	
@@ -223,12 +242,12 @@ public abstract class NumericPipe extends Pipe {
 		}
 		
 		public static byte cast(NumericPipe other) {
-			if (other.type().equals(Double)) return (byte) ((DoublePipe) other).value;
-			if (other.type().equals(Single)) return (byte) ((SinglePipe) other).value;
-			if (other.type().equals(I64)) return (byte) ((I64Pipe) other).value;
-			if (other.type().equals(I32)) return (byte) ((I32Pipe) other).value;
-			if (other.type().equals(I16)) return (byte) ((I16Pipe) other).value;
-			if (other.type().equals(I8)) return (byte) ((I8Pipe) other).value;
+			if (other instanceof DoublePipe) return (byte) ((DoublePipe) other).value;
+			if (other instanceof SinglePipe) return (byte) ((SinglePipe) other).value;
+			if (other instanceof I64Pipe) return (byte) ((I64Pipe) other).value;
+			if (other instanceof I32Pipe) return (byte) ((I32Pipe) other).value;
+			if (other instanceof I16Pipe) return (byte) ((I16Pipe) other).value;
+			if (other instanceof I8Pipe) return (byte) ((I8Pipe) other).value;
 			throw new RuntimeException("Should have casted by now.");
 		}
 	

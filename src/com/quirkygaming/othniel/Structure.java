@@ -3,6 +3,7 @@ package com.quirkygaming.othniel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.quirkygaming.othniel.pipes.Node;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.PipeDef;
 import com.quirkygaming.othniel.pipes.StructInput;
@@ -21,38 +22,25 @@ public class Structure extends Callable {
 	public final HashMap<String, PipeDef> pipeDefs = new HashMap<String, PipeDef>();
 	
 	public Structure(ExecutionMode em, RunMode rm, StructInput[] inputs, StructOutput[] outputs, String name, int lineN) {
-		super(name, getTypesFromStructNodeArray(inputs), getTypesFromStructNodeArray(outputs));
+		super(name, inputs, outputs);
 		this.em = em;
 		this.rm = rm;
 		ParseError.validate(rm == RunMode.SEQUENTIAL, lineN, "Error: Parallel execution not yet implemented");
 		this.inputs = inputs;
 		this.outputs = outputs;
-		for (PipeDef pd : inputs) {
-			ParseError.throwIf(pd.type().isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
+		for (Node pd : inputs) {
+			ParseError.throwIf(pd.isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
 			ParseError.throwIf(pipeDefs.containsKey(pd.getLabel()), lineN, "Duplicate pipe symbol: " + pd.getLabel());
 			pipeDefs.put(pd.getLabel(), pd);
 		}
-		for (PipeDef pd : outputs) {
-			ParseError.throwIf(pd.type().isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
+		for (Node pd : outputs) {
+			ParseError.throwIf(pd.isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
 			ParseError.throwIf(pipeDefs.containsKey(pd.getLabel()), lineN, "Duplicate pipe symbol: " + pd.getLabel());
 			pipeDefs.put(pd.getLabel(), pd);
 		}
 	}
 	
 	private boolean isStatic() {return this.em == ExecutionMode.STATIC;}
-	
-	private static Datatype[] getTypesFromStructNodeArray(Object[] array) {
-		Datatype[] typeArray = new Datatype[array.length];
-		for (int i = 0; i < array.length; i++) {
-			Object object = array[i];
-			if (object instanceof StructInput) {
-				typeArray[i] = ((StructInput) object).type();
-			} else {
-				typeArray[i] = ((StructOutput) object).type();
-			}
-		}
-		return typeArray;
-	}
 	
 	public enum ExecutionMode {
 		STATIC("static"), INLINE("inline");
@@ -90,7 +78,7 @@ public class Structure extends Callable {
 				if (ins[i] != null) {
 					runtimeIns[i] = ins[i].copy(c); // Copy the input
 				} else {
-					runtimeIns[i] = inputs[i].type().newPipe(ins[i].getLabel(), c); // Otherwise get the default TODO defaults
+					runtimeIns[i] = inputs[i].getCopy(ins[i].getLabel(), c); // Otherwise get the default TODO defaults
 				}
 			}
 			initializedIns = true;
@@ -107,7 +95,7 @@ public class Structure extends Callable {
 		if (!isStatic() || !initializedOuts) { // Static should only init once
 			runtimeOuts = new Pipe[this.outs.length];
 			for (int i = 0; i < this.outs.length; i++) {
-				runtimeOuts[i] = outputs[i].type().newPipe(outs[i].getLabel(), c); // get the default TODO defaults
+				runtimeOuts[i] = outputs[i].getCopy(outs[i].getLabel(), c); // get the default TODO defaults
 			}
 			initializedOuts = true;
 		}

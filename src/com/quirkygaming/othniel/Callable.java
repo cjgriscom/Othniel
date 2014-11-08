@@ -3,21 +3,29 @@ package com.quirkygaming.othniel;
 import java.util.HashMap;
 
 import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.StructInput;
+import com.quirkygaming.othniel.pipes.StructOutput;
 
 
 public abstract class Callable {
 	
 	static HashMap<String, Callable> callList = new HashMap<String, Callable>();
 	
-	protected Datatype[] ins;
-	protected Datatype[] outs;
+	public StructInput[] ins;
+	private boolean inputsArbitrary; // TODO automatic implicit reqs
+	public StructOutput[] outs;
 	private final String name;
 	
-	public Callable(String name, Datatype[] ins, Datatype[] outs) {
+	public Callable(String name, StructInput[] ins, StructOutput[] outs) {
 		this.ins = ins;
 		this.outs = outs;
 		this.name = name;
 		callList.put(name, this);
+	}
+	
+	public Callable(String name, StructInput[] ins, StructOutput[] outs, boolean inputsArbitrary) {
+		this(name, ins, outs);
+		this.inputsArbitrary = inputsArbitrary; // For natives like PRINT that take multiple args
 	}
 	
 	public static Callable getCallable(String callable) {
@@ -34,8 +42,9 @@ public abstract class Callable {
 	public int outSize() {
 		return outs.length;
 	}
-	public int size() {
-		return inSize() + outSize();
+	
+	public boolean inputsArbitrary() {
+		return inputsArbitrary;
 	}
 	
 	public abstract void call(Pipe[] ins, Pipe[] outs, CachedCall c);

@@ -6,7 +6,7 @@ public class RuntimeError {
 	
 	public static void checkTypes(Pipe p1, Pipe p2, CachedCall call) {
 		if (! p1.type().equals(p2.type())) {
-			System.err.println("Cannot cast " + p1.type().ID + " to " + p2.type().ID + " at line " + call.getLine());
+			System.err.println("Cannot cast " + p1.type() + " to " + p2.type() + " at line " + call.getLine());
 			System.exit(1);
 		}
 	}

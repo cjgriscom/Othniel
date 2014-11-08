@@ -24,4 +24,7 @@ public class StringPipe extends Pipe {
 	public String toString() {
 		return value;
 	}
+
+	@Override
+	public boolean isAbstract() {return false;}
 }

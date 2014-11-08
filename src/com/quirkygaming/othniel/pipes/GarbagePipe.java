@@ -2,7 +2,7 @@ package com.quirkygaming.othniel.pipes;
 
 import com.quirkygaming.othniel.Datatype;
 
-public class GarbagePipe extends Pipe {
+public class GarbagePipe extends UndefinedPipe {
 	
 	public static GarbagePipe INSTANCE = new GarbagePipe();
 	
@@ -18,4 +18,7 @@ public class GarbagePipe extends Pipe {
 	public String toString() {
 		return "GARBAGE PIPE";
 	}
+
+	@Override
+	public boolean isAbstract() {return true;}
 }

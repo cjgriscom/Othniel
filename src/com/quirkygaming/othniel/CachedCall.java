@@ -5,10 +5,11 @@ import com.quirkygaming.othniel.pipes.Pipe;
 public class CachedCall {
 	private Pipe[] defIns;
 	private Pipe[] defOuts;
-	Pipe[] ins;
-	Pipe[] outs;
+	public Pipe[] ins;
+	public Pipe[] outs;
 	private Callable call;
 	private int lineN;
+	public CachedCall parent;
 	
 	public CachedCall(Pipe[] ins, Callable call, Pipe[] outs, int lineN) {
 		this.defIns = ins;
