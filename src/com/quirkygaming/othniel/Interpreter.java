@@ -22,7 +22,6 @@ public class Interpreter {
 	}
 	
 	static int lineN;
-	static int callN;
 	
 	public static void parseStage(boolean headersOnly, String filename, File file, HashMap<String, Callable> retrievedCalls) {
 		lineN = 0; // Reset line number
