@@ -11,41 +11,39 @@ import com.quirkygaming.othniel.pipes.StructInput;
 public class Datatype {
 
 	static final HashMap<String, Datatype> knownTypes = new HashMap<String, Datatype>();
-	public static final Datatype I8 = new Datatype("I8", Byte.class, true);
-	public static final Datatype I16 = new Datatype("I16", Short.class, true);
-	public static final Datatype I32 = new Datatype("I32", Integer.class, true);
-	public static final Datatype I64 = new Datatype("I64", Long.class, true);
-	public static final Datatype Single = new Datatype("Single", Float.class, true);
-	public static final Datatype Double = new Datatype("Double", Double.class, true);
-	public static final Datatype Bool = new Datatype("Bool", Boolean.class, false);
-	public static final Datatype String = new Datatype("String", String.class, false);
-	public static final Datatype Anything = new Datatype("Anything", Object.class, false, true);
-	public static final Datatype Numeric = new Datatype("Numeric", Object.class, true, true);
+	public static final Datatype I8 = new Datatype("I8", true);
+	public static final Datatype I16 = new Datatype("I16", true);
+	public static final Datatype I32 = new Datatype("I32", true);
+	public static final Datatype I64 = new Datatype("I64", true);
+	public static final Datatype Single = new Datatype("Single", true);
+	public static final Datatype Double = new Datatype("Double", true);
+	public static final Datatype Bool = new Datatype("Bool", false);
+	public static final Datatype String = new Datatype("String", false);
+	public static final Datatype Anything = new Datatype("Anything", false, true);
+	public static final Datatype Numeric = new Datatype("Numeric", true, true);
 	
-	final String ID; final Class<?> clazz;
+	final String ID;
 	
-	private int inputIndex;
+	private int inputIndex = -2;
 	private int[] inputIndices;
 	private boolean isNumeric;
 	private boolean isAbstract = false;
 	
-	protected Datatype(String ID, Class<?> clazz, boolean isNumeric, boolean isAbstract) {
+	protected Datatype(String ID, boolean isNumeric, boolean isAbstract) {
 		this.ID = ID;
-		this.clazz = clazz;
 		this.isNumeric = isNumeric;
 		this.isAbstract = isAbstract;
 		knownTypes.put(ID, this);
 	}
 	
-	protected Datatype(String ID, Class<?> clazz, boolean isNumeric) {
+	protected Datatype(String ID, boolean isNumeric) {
 		this.ID = ID;
-		this.clazz = clazz;
 		this.isNumeric = isNumeric;
 		knownTypes.put(ID, this);
 	}
 	
 	private Datatype(int inputIndex) { // Implicit constructor 
-		ID = null; clazz = null;
+		ID = null;
 		this.inputIndex = inputIndex;
 		this.isAbstract = true;
 	}
@@ -56,7 +54,7 @@ public class Datatype {
 	}
 	
 	public boolean isImplicit() {
-		return clazz==null;
+		return inputIndex >= -1;
 	}
 	
 	public boolean isNumeric() {
