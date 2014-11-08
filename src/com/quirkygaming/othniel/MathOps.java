@@ -7,7 +7,7 @@ public class MathOps {
 		ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD
 	}
 	
-	public static Object castNumber(Object n, Datatype from, Datatype to) {
+	/*private static Object castNumber(Object n, Datatype from, Datatype to) {
 		if (from.equals(Double)) {
 			if (to.equals(Double)) return (double) (double) n;
 			if (to.equals(Single)) return (float) (double) n; 
@@ -57,7 +57,7 @@ public class MathOps {
 			if (to.equals(I8)) return (byte) (byte) n;
 		}
 		return null;
-	}
+	}*/
 	
 	public static Object op(Op o, Object num1, Object num2, Datatype t1, Datatype t2) {
 		if (Double.equals(t1))

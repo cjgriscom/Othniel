@@ -5,14 +5,15 @@ public class GarbagePipe extends Pipe {
 	public static GarbagePipe INSTANCE = new GarbagePipe();
 	
 	private GarbagePipe() {
-		super("^", Datatype.Anything, false);
+		super("^", Datatype.Anything);
 	}
 	
-	public Object get() {
-		throw new RuntimeException("Someone tried to get the value of the GarbagePipe...");
-	}
-	
-	public void set(Object object, Datatype pipeType, int lineN) { // Absorb set
+	public void set(Pipe otherPipe) { // Absorb set
 		return;
+	}
+
+	@Override
+	public String toString() {
+		return "GARBAGE PIPE";
 	}
 }

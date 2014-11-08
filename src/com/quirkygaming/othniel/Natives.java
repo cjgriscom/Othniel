@@ -75,28 +75,25 @@ public class Natives {
 					new Datatype[]{Datatype.implicit(0)});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			Object value = null;
 			if (ins[0].type() == Datatype.I8) {
-				value = in.nextByte();
+				((NumericPipe.I8Pipe)outs[0]).value = in.nextByte();
 			} else if (ins[0].type() == Datatype.I16) {
-				value = in.nextShort();
+				((NumericPipe.I16Pipe)outs[0]).value = in.nextShort();
 			} else if (ins[0].type() == Datatype.I32) {
-				value = in.nextInt();
+				((NumericPipe.I32Pipe)outs[0]).value = in.nextInt();
 			} else if (ins[0].type() == Datatype.I64) {
-				value = in.nextLong();
+				((NumericPipe.I64Pipe)outs[0]).value = in.nextLong();
 			} else if (ins[0].type() == Datatype.Single) {
-				value = in.nextFloat();
+				((NumericPipe.SinglePipe)outs[0]).value = in.nextFloat();
 			} else if (ins[0].type() == Datatype.Double) {
-				value = in.nextDouble();
+				((NumericPipe.DoublePipe)outs[0]).value = in.nextDouble();
 			} else if (ins[0].type() == Datatype.String) {
-				value = in.next();
+				((StringPipe)outs[0]).value = in.next();
 			} else if (ins[0].type() == Datatype.Bool) {
-				value = in.nextBoolean();
+				((BoolPipe)outs[0]).value = in.nextBoolean();
 			} else {
-				System.err.println("Invalid input datatype");
+				RuntimeError.throwIf(true, c.getLine(), ins[0].type() + " not supported for INPUT");
 			}
-			
-			outs[0].set(value, ins[0].type(), c.getLine());
 		}
 	}
 	static class InputLine extends Native {
@@ -106,8 +103,7 @@ public class Natives {
 					new Datatype[]{Datatype.String});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			Object value = in.nextLine();
-			outs[0].set(value, Datatype.String, c.getLine());
+			((StringPipe)outs[0]).value = in.nextLine();
 		}
 	}
 	static class Print extends Native {
@@ -120,7 +116,7 @@ public class Natives {
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			for (Pipe p : ins) {
-				System.out.print(p.get());
+				System.out.print(p);
 			}
 			if (newLine) System.out.println();
 		}
@@ -132,7 +128,7 @@ public class Natives {
 					new Datatype[]{Datatype.implicit(0)});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set(ins[0].get(), ins[0].type(), c.getLine());
+			outs[0].set(ins[0], c.getLine());
 		}
 	}
 	static class Xor extends Native {
@@ -142,7 +138,7 @@ public class Natives {
 					new Datatype[]{Datatype.Bool});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set((Boolean) ins[0].get() ^ (Boolean) ins[1].get(), Datatype.Bool, c.getLine());
+			((BoolPipe)ins[0]).xor((BoolPipe)ins[1], (BoolPipe)outs[0]);
 		}
 	}
 	static class And extends Native {
@@ -152,7 +148,7 @@ public class Natives {
 					new Datatype[]{Datatype.Bool});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set((Boolean) ins[0].get() && (Boolean) ins[1].get(), Datatype.Bool, c.getLine());
+			((BoolPipe)ins[0]).and((BoolPipe)ins[1], (BoolPipe)outs[0]);
 		}
 	}
 	static class Or extends Native {
@@ -162,7 +158,7 @@ public class Natives {
 					new Datatype[]{Datatype.Bool});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set((Boolean) ins[0].get() || (Boolean) ins[1].get(), Datatype.Bool, c.getLine());
+			((BoolPipe)ins[0]).or((BoolPipe)ins[1], (BoolPipe)outs[0]);
 		}
 	}
 	static class Not extends Native {
@@ -172,7 +168,7 @@ public class Natives {
 					new Datatype[]{Datatype.Bool});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set(!(Boolean) ins[0].get(), Datatype.Bool, c.getLine());
+			((BoolPipe)ins[0]).not((BoolPipe)outs[0]);
 		}
 	}
 	static class Ternary extends Native {
@@ -182,26 +178,26 @@ public class Natives {
 					new Datatype[]{Datatype.implicit(1)});
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set((Boolean) ins[0].get() ? ins[1].get() : ins[2].get(), ins[1].type(), c.getLine());
+			boolean condition = ((BoolPipe)ins[0]).value;
+			outs[0].set(condition ? ins[1] : ins[2], c.getLine());
 		}
 	}
-	static Object ZERO = new Byte((byte)0);
+	
 	static class MathOp extends Native {
 		final Op op;
 		public MathOp(String name, Op op) {
 			super(	name,
-					new Datatype[]{Datatype.Numeric, Datatype.implicit(0)},
+					new Datatype[]{Datatype.Numeric, Datatype.Numeric},
 					new Datatype[]{Datatype.implicit(0)});
 			this.op = op;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
 			try {
-				outs[0].set(MathOps.op(op, 
-						ins[0].get(), 
-						ins[1].get(), 
-						ins[0].type(), 
-						ins[1].type()
-						), ins[0].type(), c.getLine());
+				if (ins[0].type().isStrongerThan(ins[1].type())) {
+					((NumericPipe) ins[0]).op(op, true, (NumericPipe)ins[1], (NumericPipe)outs[0]);
+				} else {
+					((NumericPipe) ins[1]).op(op, false, (NumericPipe)ins[0], (NumericPipe)outs[0]);
+				}
 			} catch (ArithmeticException e) {
 				RuntimeError.throwIf(true, c.getLine(), e.getMessage());
 			}
@@ -211,18 +207,16 @@ public class Natives {
 		final COp op;
 		public CompOp(String name, COp op) {
 			super(	name,
-					new Datatype[]{Datatype.Numeric, Datatype.implicit(0)},
+					new Datatype[]{Datatype.Numeric, Datatype.Numeric},
 					new Datatype[]{Datatype.Bool});
 			this.op = op;
 		}
 		public void call(Pipe[] ins, Pipe[] outs) {
-			outs[0].set(CompOps.op(op, 
-					ins[0].get(), 
-					ins[1].get(), 
-					ins[0].type(), 
-					ins[1].type()
-					), Datatype.Bool, c.getLine());
-			
+			if (ins[0].type().isStrongerThan(ins[1].type())) {
+				 ((BoolPipe)outs[0]).value = ((NumericPipe) ins[0]).comp(op, true, (NumericPipe)ins[1]);
+			} else {
+				 ((BoolPipe)outs[0]).value = ((NumericPipe) ins[1]).comp(op, false, (NumericPipe)ins[0]);
+			}
 		}
 	}
 }

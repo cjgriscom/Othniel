@@ -6,7 +6,7 @@ public class CompOps {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static boolean op(COp o, Object o1, Object o2, Datatype t1, Datatype t2) {
+	public static boolean op(COp o, Object o1, Object o2) {
 		Comparable num1 = (Comparable) o1;
 		Comparable num2 = (Comparable) o2;
 

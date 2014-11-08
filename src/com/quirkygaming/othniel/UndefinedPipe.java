@@ -3,18 +3,17 @@ package com.quirkygaming.othniel;
 public class UndefinedPipe extends Pipe {
 	
 	public UndefinedPipe(PipeDef p) {
-		super(p.getLabel(), p.type(), false);
-		
+		super(p.getLabel(), p.type());
 	}
 	
 	@Override
-	public void set(Object object, Datatype pipeType, int lineN) {
+	public void set(Pipe otherPipe) {
 		throw new RuntimeException("Error"); //TODO
 	}
-	
+
 	@Override
-	public Object get() {
-		throw new RuntimeException("Error");
+	public String toString() {
+		return "UNDEFINED PIPE";
 	}
 
 }

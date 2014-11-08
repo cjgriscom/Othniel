@@ -80,7 +80,16 @@ public class Datatype {
 	}
 	
 	public Pipe newPipe(String label, CachedCall call) {
-		return new Pipe(label, getImplicitType(label, call));
+		Datatype t = getImplicitType(label, call);
+		if (t.equals(Double)) return new NumericPipe.DoublePipe(label);
+		if (t.equals(Single)) return new NumericPipe.SinglePipe(label);
+		if (t.equals(I64)) return new NumericPipe.I64Pipe(label);
+		if (t.equals(I32)) return new NumericPipe.I32Pipe(label);
+		if (t.equals(I16)) return new NumericPipe.I16Pipe(label);
+		if (t.equals(I8)) return new NumericPipe.I8Pipe(label);
+		if (t.equals(String)) return new StringPipe(label);
+		if (t.equals(Bool)) return new BoolPipe(label);
+		throw new RuntimeException("newPipe could not instantiate the type " + t);
 	}
 	
 	public boolean isStrongerThan(Datatype other) {
@@ -132,24 +141,16 @@ public class Datatype {
 		return ID;
 	}
 	
-	private static Object checkCompatInternal(Object object, Datatype fromT, Datatype toT, int lineN, boolean cast) {
+	public static void checkCompat(Datatype fromT, Datatype toT, int lineN) {
 		if (toT.isNumeric() && fromT.isNumeric()) {
 			RuntimeError.validate(toT.isStrongerThan(fromT) || toT.equals(fromT), lineN, 
 					"Cannot cast a number to a weaker type");
-			if (!toT.equals(fromT) && cast) return MathOps.castNumber(object, fromT, toT);
 		} else {
-			RuntimeError.validate(toT.equals(fromT), lineN, 
+			RuntimeError.validate(toT.equals(fromT) || 
+					toT.equals(Anything), // Should only occur for GarbagePipe
+					lineN, 
 					"Incompatible types: " + fromT + " and " + toT);
 		}
-		return object;
-	}
-	
-	public static Object checkCompatAndCast(Object object, Datatype fromT, Datatype toT, int lineN) {
-		return checkCompatInternal(object, fromT, toT, lineN, true);
-	}
-	
-	public static void checkCompat(Datatype fromT, Datatype toT, int lineN) {
-		checkCompatInternal(null, fromT, toT, lineN, false);
 	}
 	
 }

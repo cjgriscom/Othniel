@@ -82,7 +82,7 @@ public class Structure extends Callable {
 			runtimeIns = new Pipe[this.ins.length];
 			for (int i = 0; i < this.ins.length; i++) {
 				if (ins[i] != null) {
-					runtimeIns[i] = new Pipe(ins[i], c.getLine()); // Copy the input
+					runtimeIns[i] = ins[i].copy(c); // Copy the input
 				} else {
 					runtimeIns[i] = inputs[i].type().newPipe(ins[i].getLabel(), c); // Otherwise get the default TODO defaults
 				}
@@ -90,7 +90,7 @@ public class Structure extends Callable {
 			initializedIns = true;
 		} else {
 			for (int i = 0; i < this.ins.length; i++) {
-				if (ins[i] != null) runtimeIns[i].set(ins[i].get(), ins[i].type(), c.getLine());
+				if (ins[i] != null) runtimeIns[i].set(ins[i], c.getLine());
 			}
 		}
 		
@@ -110,7 +110,7 @@ public class Structure extends Callable {
 	
 	public void copyResult(Pipe[] to, CachedCall c) {
 		for (int i = 0; i < to.length; i++) {
-			to[i].set(runtimeOuts[i].get(), runtimeOuts[i].type(), c.getLine());
+			to[i].set(runtimeOuts[i], c.getLine());
 		}
 	}
 

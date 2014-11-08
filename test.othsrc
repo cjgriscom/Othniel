@@ -1,13 +1,9 @@
-//TODO add pipe keywords: ^ for garbagepipe, > for unnamed forward
 //TODO check for valid pipe names and method names
 
 inline sequence test
-	[TRUE, 5]var[res]PRINTLN
-	[FALSE, 0]var[get]PRINTLN
+	[TRUE, 5]var[>]PRINTLN
+	[FALSE, 0]var[>]PRINTLN
 	getDefault[>] ["Default: ", <]PRINTLN
-	["Min,max of 5 and 7: "]PRINT		[5,7]MINMAX[>, >] [<, ",", <]PRINTLN
-	["Max of 8 and 10: "]PRINT			[8,10]MINMAX[>, ^]PRINTLN
-	["Max of 8 and 10: "]PRINT			[8,10]MINMAX[^, >]PRINTLN
 	
 	["Enter two booleans: "]PRINT
 	[FALSE]INPUT[bool1]
@@ -28,19 +24,22 @@ inline sequence test
 	[int1, "<", int2, "?  "]PRINT [int1, int2]<[>]PRINTLN
 	[int1, ">=", int2, "? "]PRINT [int1, int2]>=[>]PRINTLN
 	[int1, "<=", int2, "? "]PRINT [int1, int2]<=[>]PRINTLN
+	["Min,max of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[>, >] [<, ",", <]PRINTLN
+	["Min of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[>, ^] [<]PRINTLN
+	["Max of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[^, >]PRINTLN
 
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 	
-inline sequence getDefault[r:I32] // Should NOT return null; I need to define defaults
+inline sequence getDefault[r:I32] // Should NOT return null; seems good now
 	
 static sequence [bool1:Bool, bool2:Bool]printBooleanOps
-	[bool1, bool2]XOR[x]  ["Result of XOR:  ", x]PRINTLN
-	[bool1, bool2]AND[x]  ["Result of AND:  ", x]PRINTLN
-	[bool1, bool2]OR[x]   ["Result of OR:   ", x]PRINTLN
-	[bool1, bool2]XNOR[x] ["Result of XNOR: ", x]PRINTLN
-	[bool1, bool2]NAND[x] ["Result of NAND: ", x]PRINTLN
-	[bool1, bool2]NOR[x]  ["Result of NOR:  ", x]PRINTLN
+	[bool1, bool2]XOR[>]  ["Result of XOR:  ", <]PRINTLN
+	[bool1, bool2]AND[>]  ["Result of AND:  ", <]PRINTLN
+	[bool1, bool2]OR[>]   ["Result of OR:   ", <]PRINTLN
+	[bool1, bool2]XNOR[>] ["Result of XNOR: ", <]PRINTLN
+	[bool1, bool2]NAND[>] ["Result of NAND: ", <]PRINTLN
+	[bool1, bool2]NOR[>]  ["Result of NOR:  ", <]PRINTLN
 
 inline sequence [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
 	[a]:[newB]
