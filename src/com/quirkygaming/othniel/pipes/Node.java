@@ -42,18 +42,16 @@ public abstract class Node extends PipeDef {
 		if (spawnedPipe instanceof GarbagePipe) return;
 		
 		Datatype spawnType = spawnedPipe.type();
-		if (spawnedPipe instanceof UndefinedPipe) {
-			UndefinedPipe up = (UndefinedPipe)spawnedPipe;
-			if (up.isImplicit()) {
-				spawnType = up.getImplicitReference(c).type();
-			}
-		}
-		if (this.isNumeric()) {
+		
+		PipeDef nodeInstance = this;
+		if (this.isImplicit()) nodeInstance = this.getImplicitReference(c);
+		
+		if (nodeInstance.isNumeric()) {
 			ParseError.validate(spawnedPipe.isNumeric(), lineN, spawnedPipe.getLabel() + " must be numeric");
 		} else if (!this.isAbstract()) {
-			RuntimeError.validate(this.type() == spawnType,
+			RuntimeError.validate(nodeInstance.type() == spawnType,
 					lineN, 
-					"Incompatible types: " + type() + " and " + spawnedPipe.type());
+					"Incompatible types: " + nodeInstance.type() + " and " + spawnedPipe.type());
 		}
 	}
 }
