@@ -11,9 +11,10 @@ public class StructInput extends Node {
 	public StructInput(String expression, StructInput[] knownInParams, int lineN) {
 		super(Pipe.fromExpression(expression, knownInParams, true, lineN));
 		this.label = definition.label;
+		if (expression.contains("=")) this.isOptional = true; // Equal sign implies that input is optional
 	}
 	
-	public boolean optional() {
-		return isOptional; //TODO
+	public boolean isOptional() {
+		return isOptional;
 	}
 }

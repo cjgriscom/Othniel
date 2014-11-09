@@ -1,6 +1,7 @@
 package com.quirkygaming.othniel.pipes;
 
 import com.quirkygaming.othniel.CachedCall;
+import com.quirkygaming.othniel.Constants;
 import com.quirkygaming.othniel.Datatype;
 import com.quirkygaming.othniel.ParseError;
 import com.quirkygaming.othniel.RuntimeError;
@@ -9,19 +10,33 @@ import com.quirkygaming.othniel.pipes.NumericPipe.*;
 public abstract class Pipe extends PipeDef {
 	
 	public static Pipe fromExpression(String expression, StructInput[] inParams, boolean isInput, int lineN) { // For StructInput and StructOutput
+		//Syntax:  pipeName:I32 = 123
+		//If isInput, the equal sign defines the input as optional
+		
 		expression = expression.trim();
 		
 		int colonPos = expression.indexOf(':');
+		
 		ParseError.validate(colonPos > 0, lineN, "Expected (label):(type)");
 		String label = expression.substring(0, colonPos).trim();
 		
 		String datatypeS = expression.substring(colonPos + 1).trim();
 		
-		if (isInput) {
-			//TODO optional parameters : datatypeS = ...
+		int equalPos = datatypeS.indexOf('=');
+		
+		if (equalPos != -1) {
+			String defaultExp = datatypeS.substring(equalPos + 1).trim(); // Separate default value
+			datatypeS = datatypeS.substring(0, equalPos).trim(); // and datatype
+			
+			Pipe constantPipe = Constants.matchConstant(defaultExp, lineN);
+			ParseError.validate(constantPipe.type().toString().equals(datatypeS), lineN, 
+					"Default value type does not match definition");
+			
+			constantPipe.label = label;
+			
+			return constantPipe;
 		}
-		//START
-		datatypeS = datatypeS.trim();
+		
 		if (datatypeS.equals("Double")) {
 			return new DoublePipe(label);
 		} else if (datatypeS.equals("Single")) {
@@ -44,6 +59,7 @@ public abstract class Pipe extends PipeDef {
 			return new UndefinedPipe(label, Datatype.Numeric);
 		} else if (datatypeS.startsWith("typeof ")) {
 			ParseError.validate(inParams != null, lineN, "typeof is not allowed in this context"); // for datatype constants
+			ParseError.validate(equalPos == -1, lineN, "Defaults cannot be defined for implicit types"); 
 			String implicitPipe = datatypeS.substring(7).trim();
 			ParseError.validate(!implicitPipe.isEmpty(), lineN, "typeof requires a referenced pipe");
 			for (int i = 0; i < inParams.length; i++) {
@@ -54,6 +70,7 @@ public abstract class Pipe extends PipeDef {
 			ParseError.validate(false, lineN, "typeof expression could not be evaluated for " + implicitPipe);
 		} else {
 			ParseError.throwIf(!isInput, lineN, "Abstract types are not allowed in outputs; use typeof when possible:");
+			ParseError.validate(equalPos == -1, lineN, "Defaults cannot be defined for abstract types"); 
 			//TODO Abstract types; figure out how to deal with
 		}
 		

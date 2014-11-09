@@ -31,7 +31,7 @@ inline sequence test
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 	
-inline sequence getDefault[r:I32] // Should NOT return null; seems good now
+inline sequence getDefault[r:I32=123] // Should NOT return null; seems good now
 	
 static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]XOR[>]  ["Result of XOR:  ", <]PRINTLN

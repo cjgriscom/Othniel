@@ -73,17 +73,17 @@ public class Structure extends Callable {
 	
 	public Pipe[] getIns(Pipe[] ins, CachedCall c) {
 		if (!isStatic() || !initializedIns) { // Static should only init once
-			runtimeIns = new Pipe[this.ins.length];
-			for (int i = 0; i < this.ins.length; i++) {
+			runtimeIns = new Pipe[this.inSize()];
+			for (int i = 0; i < this.inSize(); i++) {
 				if (ins[i] != null) {
 					runtimeIns[i] = ins[i].copy(c); // Copy the input
 				} else {
-					runtimeIns[i] = inputs[i].getCopy(ins[i].getLabel(), c); // Otherwise get the default TODO defaults
+					runtimeIns[i] = inputs[i].getCopy(c);
 				}
 			}
 			initializedIns = true;
 		} else {
-			for (int i = 0; i < this.ins.length; i++) {
+			for (int i = 0; i < this.inSize(); i++) {
 				if (ins[i] != null) runtimeIns[i].set(ins[i], c.getLine());
 			}
 		}
@@ -93,9 +93,9 @@ public class Structure extends Callable {
 	
 	public Pipe[] getOuts(Pipe[] outs, CachedCall c) {
 		if (!isStatic() || !initializedOuts) { // Static should only init once
-			runtimeOuts = new Pipe[this.outs.length];
-			for (int i = 0; i < this.outs.length; i++) {
-				runtimeOuts[i] = outputs[i].getCopy(outs[i].getLabel(), c); // get the default TODO defaults
+			runtimeOuts = new Pipe[outSize()];
+			for (int i = 0; i < outSize(); i++) {
+				runtimeOuts[i] = outputs[i].getCopy(c);
 			}
 			initializedOuts = true;
 		}

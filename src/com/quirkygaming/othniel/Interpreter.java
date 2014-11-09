@@ -142,27 +142,30 @@ public class Interpreter {
 				refInOccurance++;
 			}
 			
-			Pipe cnst = Constants.matchConstant(token, lineN);
-			if (cnst == null) {
-				ParseError.verifySymbolRecognized(structure.pipeDefs.containsKey(token), lineN, token);
-				if (structure.pipeDefs.get(token) instanceof Pipe) {
-					inPipes[i] = (Pipe)structure.pipeDefs.get(token);
-				} else { //instanceof node
-					inPipes[i] = new UndefinedPipe((Node)structure.pipeDefs.get(token)); // The structure will handle the replacement
+			if (token.equals("?")) { // Optional pipe
+				inPipes[i] = null;
+				ParseError.validate(nativ.getIn(i).isOptional(), lineN, "Param " + i + " is not optional for " + call.callName);
+			} else {
+				Pipe cnst = Constants.matchConstant(token, lineN);
+				if (cnst == null) {
+					ParseError.verifySymbolRecognized(structure.pipeDefs.containsKey(token), lineN, token);
+					if (structure.pipeDefs.get(token) instanceof Pipe) {
+						inPipes[i] = (Pipe)structure.pipeDefs.get(token);
+					} else { //instanceof node
+						inPipes[i] = new UndefinedPipe((Node)structure.pipeDefs.get(token)); // The structure will handle the replacement
+					}
+				} else {
+					inPipes[i] = cnst;
 				}
-			} else {
-				inPipes[i] = cnst;
+				nativ.getIn(i).checkCompatWith(inPipes[i], lineN, currentCall);
 			}
-			if (nativ.inputsArbitrary()) {
-				nativ.ins[0].checkCompatWith(inPipes[i], lineN, currentCall);
-			} else {
-				nativ.ins[i].checkCompatWith(inPipes[i], lineN, currentCall);
-			}
+			
 		}
 		
 		for (int i = 0; i < call.outParams.length; i++) {
 			String token = call.outParams[i].trim();
 			
+			ParseError.throwIf(token.equals("?"), lineN, "? not allowed in outputs");
 			ParseError.throwIf(token.equals("<"), lineN, "< not allowed in outputs");
 			if (token.equals(">")) {
 				token = "<" + (callN) + "." + refOutOccurance; // Create pipe reference
@@ -179,11 +182,11 @@ public class Interpreter {
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
-				Pipe p = nativ.outs[i].getCopy(token, currentCall);
+				Pipe p = nativ.getOut(i).getCopy(token, currentCall);
 				structure.pipeDefs.put(token, p);
 				outPipes[i] = p;
 			}
-			nativ.outs[0].checkCompatWith(outPipes[i], lineN, currentCall);
+			nativ.getOut(i).checkCompatWith(outPipes[i], lineN, currentCall); // TODO why did it say 0?
 		}
 		return currentCall;
 		

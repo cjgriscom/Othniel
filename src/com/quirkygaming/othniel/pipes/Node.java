@@ -14,6 +14,10 @@ public abstract class Node extends PipeDef {
 		this.type = definition.type;
 	}
 	
+	public Pipe getCopy(CachedCall c) {
+		return definition.copy(c);
+	}
+	
 	public Pipe getCopy(String newLabel, CachedCall c) {
 		Pipe p = definition.copy(c);
 		p.label = newLabel;

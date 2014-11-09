@@ -58,15 +58,15 @@ public class Natives {
 		@Override
 		public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
 			// Loop through ins and outs and if any are defined implicitly, verify their type correctness
-			for (int i = 0; i < ins.length; i++) {
-				Pipe reqType = ins[i].definition();
-				if (reqType.isImplicit()) reqType = ins[i].getImplicitReference(c);
+			for (int i = 0; i < inSize(); i++) {
+				Pipe reqType = getIn(i).definition();
+				if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c);
 				else continue;
 				Pipe.checkCompat(runtimeIns[i], reqType, c.getLine());
 			}
-			for (int i = 0; i < outs.length; i++) {
-				Pipe reqType = outs[i].definition();
-				if (reqType.isImplicit()) reqType = outs[i].getImplicitReference(c);
+			for (int i = 0; i < outSize(); i++) {
+				Pipe reqType = getOut(i).definition();
+				if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c);
 				else continue;
 				Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
 			}

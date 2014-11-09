@@ -11,9 +11,9 @@ public abstract class Callable {
 	
 	static HashMap<String, Callable> callList = new HashMap<String, Callable>();
 	
-	public StructInput[] ins;
+	private StructInput[] ins;
 	private boolean inputsArbitrary; // TODO automatic implicit reqs
-	public StructOutput[] outs;
+	private StructOutput[] outs;
 	private final String name;
 	
 	public Callable(String name, StructInput[] ins, StructOutput[] outs) {
@@ -30,6 +30,18 @@ public abstract class Callable {
 	
 	public static Callable getCallable(String callable) {
 		return callList.get(callable);
+	}
+	
+	public StructInput getIn(int index) {
+		if (inputsArbitrary) {
+			return ins[0];
+		} else {
+			return ins[index];
+		}
+	}
+	
+	public StructOutput getOut(int index) {
+		return outs[index];
 	}
 	
 	public final String name() {
