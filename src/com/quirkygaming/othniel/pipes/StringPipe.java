@@ -8,6 +8,7 @@ public class StringPipe extends Pipe {
 	
 	public StringPipe(String label) {
 		super(label, Datatype.String);
+		this.value = "";
 	}
 
 	public StringPipe(String label, String value) {
