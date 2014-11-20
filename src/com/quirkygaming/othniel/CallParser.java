@@ -10,6 +10,7 @@ public class CallParser {
 	public class ParsedCall {
 		public String[] inParams;
 		public String[] outParams;
+		public String[] confNodes;
 		public String callName;
 	}
 	
@@ -30,7 +31,7 @@ public class CallParser {
 	}
 	
 	public static void main(String[] args) { // Test method
-		String line = "[pipe]a s[ss] [s]s[^]a[var33, l] [a]asd[b]op[p]";
+		String line = "[pipe]a s{var:I32=0}[ss] [s]s[^]a[var33, l] [a]asd[b]op[p]";
 		
 		CallParser parser = new CallParser(line, 123, false);
 		
@@ -41,6 +42,14 @@ public class CallParser {
 			}
 			System.out.print("]");
 			System.out.print(call.callName);
+			if (call.confNodes.length > 0) {
+				System.out.print("{");
+				for (String param : call.confNodes) {
+					System.out.print(param + " ");
+				}
+				System.out.print("}");
+			}
+			
 			System.out.print("[");
 			for (String param : call.outParams) {
 				System.out.print(param + " ");
@@ -148,7 +157,16 @@ public class CallParser {
 				expected = CONF_NODE + SPACE + PARAMETER;
 			} else if (c.type == CONF_NODE) {
 				expected = SPACE + PARAMETER;
-				throw new RuntimeException("Configutation nodes not yet implemented");
+				int nNodes = 0; i--;
+				while (components.size() > i + 1 && components.get(i + 1).type == CONF_NODE) {
+					i++;
+					if (!components.get(i).content.isEmpty()) nNodes++; // An empty param denotes empty brackets; we don't want to add them
+				}
+				String[] cnodeArray = new String[nNodes];
+				for (int j = 0; j < nNodes; j++) {
+					cnodeArray[j] = components.get(i - nNodes + j+1).content;
+				}
+				currentCall.confNodes = cnodeArray;
 			} else if (c.type == SPACE) {
 				// Advance currentCall to new one
 				currentCall = advance(currentCall, lineN, c);
@@ -162,6 +180,7 @@ public class CallParser {
 		ParseError.validate(currentCall.callName != null, lineN, "Floating parameters at index " + c.beginIndex); 
 		if (currentCall.inParams == null) currentCall.inParams = new String[0];
 		if (currentCall.outParams == null) currentCall.outParams = new String[0];
+		if (currentCall.confNodes == null) currentCall.confNodes = new String[0];
 		calls.add(currentCall);
 		return new ParsedCall();
 	}
