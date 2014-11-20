@@ -3,6 +3,8 @@ package com.quirkygaming.othniel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.quirkygaming.othniel.Keywords.ExecutionMode;
+import com.quirkygaming.othniel.Keywords.RunMode;
 import com.quirkygaming.othniel.pipes.Node;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.PipeDef;
@@ -43,30 +45,6 @@ public class Structure extends Callable {
 	public boolean isStatic() {return this.em == ExecutionMode.STATIC;}
 	public boolean isInstantiated() {return this.em == ExecutionMode.INSTANTIATED;}
 	public boolean isInline() {return this.em == ExecutionMode.INLINE;}
-	
-	public enum ExecutionMode {
-		STATIC("static"), INSTANTIATED("instantiated"), INLINE("inline");
-		
-		private String name;
-		private ExecutionMode(String s) {
-			name = s;
-		}
-		public String toString() {
-			return name;
-		}
-	}
-	
-	public enum RunMode {
-		SEQUENTIAL("sequence"), PARALLEL("parallel");
-		
-		private String name;
-		private RunMode(String s) {
-			name = s;
-		}
-		public String toString() {
-			return name;
-		}
-	}
 	
 	private boolean initializedIns = false;
 	private Pipe[] runtimeIns;

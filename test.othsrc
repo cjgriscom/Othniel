@@ -1,6 +1,7 @@
 //TODO check for valid pipe names and method names
 
 instantiated sequence test
+	declare{lol}
 	[TRUE, 50]var0[^] [FALSE, 0]var0[>]PRINTLN
 	[TRUE, 51]var1[^] [FALSE, 0]var1[>]PRINTLN
 	[TRUE, 52]var2[^] [FALSE, 0]var2[>]PRINTLN

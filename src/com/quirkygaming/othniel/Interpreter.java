@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import com.quirkygaming.othniel.CallParser.ParsedCall;
+import com.quirkygaming.othniel.Keywords.ExecutionMode;
+import com.quirkygaming.othniel.Keywords.RunMode;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
 import com.quirkygaming.othniel.pipes.Node;
 import com.quirkygaming.othniel.pipes.Pipe;
@@ -83,24 +85,24 @@ public class Interpreter {
 		
 		ParseError.validate(splitInfo.length > 2, lineN, "Malformed callable header");
 		
-		Structure.ExecutionMode em = null;
+		ExecutionMode em = null;
 		
 		if (splitInfo[0].equals("instantiated")) {
-			em = Structure.ExecutionMode.INSTANTIATED;
+			em = ExecutionMode.INSTANTIATED;
 		} else if (splitInfo[0].equals("static")) {
-			em = Structure.ExecutionMode.STATIC;
+			em = ExecutionMode.STATIC;
 		} else if (splitInfo[0].equals("inline")) {
-			em = Structure.ExecutionMode.INLINE;
+			em = ExecutionMode.INLINE;
 		}
 		
 		ParseError.validate(em != null, lineN, "Malformed callable header");
 		
-		Structure.RunMode rm = null;
+		RunMode rm = null;
 		
 		if (splitInfo[1].equals("parallel")) {
-			rm = Structure.RunMode.PARALLEL;
+			rm = RunMode.PARALLEL;
 		} else if (splitInfo[1].equals("sequence")) {
-			rm = Structure.RunMode.SEQUENTIAL;
+			rm = RunMode.SEQUENTIAL;
 		}
 		
 		ParseError.validate(rm != null, lineN, "Malformed callable header");
