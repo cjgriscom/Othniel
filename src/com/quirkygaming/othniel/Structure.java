@@ -43,7 +43,7 @@ public class Structure extends Callable {
 	private boolean isStatic() {return this.em == ExecutionMode.STATIC;}
 	
 	public enum ExecutionMode {
-		STATIC("static"), INLINE("inline");
+		STATIC("static"), INSTANTIATED("instantiated");
 		
 		private String name;
 		private ExecutionMode(String s) {
@@ -116,7 +116,7 @@ public class Structure extends Callable {
 		//TODO if rm is PARALLEL, link calls and create threads
 		
 		for (CachedCall innerCall : callList) {
-			if (this.em == ExecutionMode.INLINE) innerCall.resetRuntime(); //TODO don't think this is right? maybe it is
+			if (this.em == ExecutionMode.INSTANTIATED) innerCall.resetRuntime(); //TODO don't think this is right? maybe it is
 			
 			replaceWaits(innerCall.ins, true, inputPipes, outputPipes);
 			replaceWaits(innerCall.outs, false, inputPipes, outputPipes);

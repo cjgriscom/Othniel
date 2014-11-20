@@ -1,6 +1,6 @@
 //TODO check for valid pipe names and method names
 
-inline sequence test
+instantiated sequence test
 	[TRUE, 5]var[>]PRINTLN
 	[FALSE, 0]var[>]PRINTLN
 	getDefault[>] ["Default: ", <]PRINTLN
@@ -31,7 +31,7 @@ inline sequence test
 static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 	
-inline sequence getDefault[r:I32=123] // Should NOT return null; seems good now
+instantiated sequence getDefault[r:I32=123] // Should NOT return null; seems good now
 	
 static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]XOR[>]  ["Result of XOR:  ", <]PRINTLN
@@ -41,6 +41,6 @@ static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]NAND[>] ["Result of NAND: ", <]PRINTLN
 	[bool1, bool2]NOR[>]  ["Result of NOR:  ", <]PRINTLN
 
-inline sequence [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
+instantiated sequence [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
 	[a]:[newB]
 	[b]:[newA]

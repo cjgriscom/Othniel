@@ -37,7 +37,7 @@ public class Interpreter {
 				if (commentStart >= 0) line = line.substring(0, commentStart); // Strip comments from line
 				if (line.equals("")) continue;
 				
-				if (!(line.startsWith("inline") || line.startsWith("static"))) { //TODO ew
+				if (!(line.startsWith("instantiated") || line.startsWith("static"))) { //TODO ew
 					if (!headersOnly) {
 						ParseError.validate(newStructure != null, lineN, "Expected structure header"); // Enforce header if one hasn't occured yet
 						
@@ -83,8 +83,8 @@ public class Interpreter {
 		
 		Structure.ExecutionMode em = null;
 		
-		if (splitInfo[0].equals("inline")) {
-			em = Structure.ExecutionMode.INLINE;
+		if (splitInfo[0].equals("instantiated")) {
+			em = Structure.ExecutionMode.INSTANTIATED;
 		} else if (splitInfo[0].equals("static")) {
 			em = Structure.ExecutionMode.STATIC;
 		}
