@@ -6,7 +6,6 @@ import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
 
-
 public abstract class Callable {
 	
 	static HashMap<String, Callable> callList = new HashMap<String, Callable>();
@@ -58,6 +57,10 @@ public abstract class Callable {
 	public boolean inputsArbitrary() {
 		return inputsArbitrary;
 	}
+	
+	public abstract boolean isStatic();
+	public abstract boolean isInstantiated();
+	public abstract boolean isInline();
 	
 	public abstract void call(Pipe[] ins, Pipe[] outs, CachedCall c);
 }

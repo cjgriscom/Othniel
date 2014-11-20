@@ -128,7 +128,7 @@ public abstract class Pipe extends PipeDef {
 			RuntimeError.validate(toT.type().equals(fromT.type()) || 
 					toT instanceof GarbagePipe,
 					lineN, 
-					"Incompatible types: " + fromT.type() + " and " + toT.type());
+					"Incompatible types: " + fromT.getLabel()+":"+fromT.type() + " and " + toT.getLabel()+":"+toT.type());
 		}
 	}
 	

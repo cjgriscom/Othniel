@@ -24,7 +24,7 @@ public class CachedCall {
 	}
 	
 	public void resetRuntime(Structure parent) { // Must be called for instantiated structures before run
-		if (!(call instanceof Structure) || ((Structure)call).isInstantiated()) { // Native or instantiated
+		if (call.isInstantiated()) { // Native or instantiated
 			ins = defIns.clone();
 			outs = defOuts.clone();
 		}

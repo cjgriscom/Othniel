@@ -76,6 +76,10 @@ public class Natives {
 		
 		public abstract void call(Pipe[] ins, Pipe[] outs);
 		
+		public boolean isStatic() {return false;}
+		public boolean isInstantiated() {return true;}
+		public boolean isInline() {return false;}
+		
 	}
 	
 	static class Input extends Native {
