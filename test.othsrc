@@ -1,8 +1,12 @@
 //TODO check for valid pipe names and method names
 
 instantiated sequence test
-	[TRUE, 5]var[>]PRINTLN
-	[FALSE, 0]var[>]PRINTLN
+	[TRUE, 5]var0[^] [FALSE, 0]var0[>]PRINTLN
+	[TRUE, 5]var1[^] [FALSE, 0]var1[>]PRINTLN
+	[TRUE, 5]var2[^] [FALSE, 0]var2[>]PRINTLN
+	[TRUE, 5]var3[^] [FALSE, 0]var3[>]PRINTLN
+	[TRUE, 5]var4[^] [FALSE, 0]var4[>]PRINTLN
+	[TRUE, 5]var5[^] [FALSE, 0]var5[>]PRINTLN
 	getDefault[>] ["Default: ", <]PRINTLN
 	
 	["Enter two booleans: "]PRINT
@@ -28,8 +32,23 @@ instantiated sequence test
 	["Min of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[>, ^] [<]PRINTLN
 	["Max of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[^, >]PRINTLN
 
-static sequence [write:Bool, value:I32]var[glob:I32] // Should behave statically
+static sequence [write:Bool, value:I32]var0[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
+	
+inline sequence [write:Bool, value:I32]var1[glob:I32] // Should not
+	[write, value, glob]?:[glob]
+	
+instantiated sequence [write:Bool, value:I32]var2[glob:I32] // Should not
+	[write, value, glob]?:[glob]
+	
+static sequence [write:Bool, value:I32]var3[glob:I32] // Should
+	[write, value]var0[glob]
+	
+static sequence [write:Bool, value:I32]var4[glob:I32] // Should
+	[write, value]var1[glob]
+	
+static sequence [write:Bool, value:I32]var5[glob:I32] // Should not
+	[write, value]var2[glob]
 	
 instantiated sequence getDefault[r:I32=123] // Should NOT return null; seems good now
 	

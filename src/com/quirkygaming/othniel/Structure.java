@@ -40,10 +40,12 @@ public class Structure extends Callable {
 		}
 	}
 	
-	private boolean isStatic() {return this.em == ExecutionMode.STATIC;}
+	public boolean isStatic() {return this.em == ExecutionMode.STATIC;}
+	public boolean isInstantiated() {return this.em == ExecutionMode.INSTANTIATED;}
+	public boolean isInline() {return this.em == ExecutionMode.INLINE;}
 	
 	public enum ExecutionMode {
-		STATIC("static"), INSTANTIATED("instantiated");
+		STATIC("static"), INSTANTIATED("instantiated"), INLINE("inline");
 		
 		private String name;
 		private ExecutionMode(String s) {
@@ -82,6 +84,8 @@ public class Structure extends Callable {
 				}
 			}
 			initializedIns = true;
+		} else if (isInline()) {
+			return c.ins;
 		} else {
 			for (int i = 0; i < this.inSize(); i++) {
 				if (ins[i] != null) runtimeIns[i].set(ins[i], c.getLine());
@@ -92,13 +96,15 @@ public class Structure extends Callable {
 	}
 	
 	public Pipe[] getOuts(Pipe[] outs, CachedCall c) {
-		if (!isStatic() || !initializedOuts) { // Static should only init once
+		if (!(isStatic() || isInline()) || !initializedOuts) { // Static should only init once
 			runtimeOuts = new Pipe[outSize()];
 			for (int i = 0; i < outSize(); i++) {
 				runtimeOuts[i] = outputs[i].getCopy(c);
 			}
 			initializedOuts = true;
-		}
+		} else if (isInline()) {
+			return c.outs;
+		} 
 		return runtimeOuts;
 	}
 	
@@ -116,14 +122,14 @@ public class Structure extends Callable {
 		//TODO if rm is PARALLEL, link calls and create threads
 		
 		for (CachedCall innerCall : callList) {
-			if (this.em == ExecutionMode.INSTANTIATED) innerCall.resetRuntime(); //TODO don't think this is right? maybe it is
+			innerCall.resetRuntime(this);
 			
 			replaceWaits(innerCall.ins, true, inputPipes, outputPipes);
 			replaceWaits(innerCall.outs, false, inputPipes, outputPipes);
 			innerCall.call();
 		}
 		
-		copyResult(outs, c);
+		if (!isInline()) copyResult(outs, c); //TODO check & comment
 	}
 	
 	private void replaceWaits(Pipe[] pipes, boolean isInput, Pipe[] inputPipes, Pipe[] outputPipes) {

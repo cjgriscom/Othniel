@@ -37,7 +37,9 @@ public class Interpreter {
 				if (commentStart >= 0) line = line.substring(0, commentStart); // Strip comments from line
 				if (line.equals("")) continue;
 				
-				if (!(line.startsWith("instantiated") || line.startsWith("static"))) { //TODO ew
+				if (!(line.startsWith("instantiated") || 
+						line.startsWith("inline") || 
+						line.startsWith("static"))) { //TODO ew
 					if (!headersOnly) {
 						ParseError.validate(newStructure != null, lineN, "Expected structure header"); // Enforce header if one hasn't occured yet
 						
@@ -87,6 +89,8 @@ public class Interpreter {
 			em = Structure.ExecutionMode.INSTANTIATED;
 		} else if (splitInfo[0].equals("static")) {
 			em = Structure.ExecutionMode.STATIC;
+		} else if (splitInfo[0].equals("inline")) {
+			em = Structure.ExecutionMode.INLINE;
 		}
 		
 		ParseError.validate(em != null, lineN, "Malformed callable header");
@@ -118,17 +122,17 @@ public class Interpreter {
 	}
 	
 	public static CachedCall parseCall(ParsedCall call, Structure structure, String line, int lineN, int callN) {
-		Callable nativ = Callable.getCallable(call.callName);
+		Callable targetCall = Callable.getCallable(call.callName);
 
-		ParseError.validate(nativ != null, lineN, "Call not found: " + call.callName);
+		ParseError.validate(targetCall != null, lineN, "Call not found: " + call.callName);
 
-		ParseError.validate(call.inParams.length == nativ.inSize() || nativ.inputsArbitrary(), lineN, "Number of inputs does not match");
-		ParseError.validate(call.outParams.length == nativ.outSize(), lineN, "Number of outputs does not match");
+		ParseError.validate(call.inParams.length == targetCall.inSize() || targetCall.inputsArbitrary(), lineN, "Number of inputs does not match");
+		ParseError.validate(call.outParams.length == targetCall.outSize(), lineN, "Number of outputs does not match");
 		
 		Pipe inPipes[] = new Pipe[call.inParams.length];
 		Pipe outPipes[] = new Pipe[call.outParams.length];
 		
-		CachedCall currentCall = new CachedCall(inPipes, nativ, outPipes, lineN);
+		CachedCall currentCall = new CachedCall(inPipes, targetCall, outPipes, lineN);
 		
 		int refInOccurance = 0; // For < and >
 		int refOutOccurance = 0; // For < and >
@@ -144,7 +148,7 @@ public class Interpreter {
 			
 			if (token.equals("?")) { // Optional pipe
 				inPipes[i] = null;
-				ParseError.validate(nativ.getIn(i).isOptional(), lineN, "Param " + i + " is not optional for " + call.callName);
+				ParseError.validate(targetCall.getIn(i).isOptional(), lineN, "Param " + i + " is not optional for " + call.callName);
 			} else {
 				Pipe cnst = Constants.matchConstant(token, lineN);
 				if (cnst == null) {
@@ -157,7 +161,7 @@ public class Interpreter {
 				} else {
 					inPipes[i] = cnst;
 				}
-				nativ.getIn(i).checkCompatWith(inPipes[i], lineN, currentCall);
+				targetCall.getIn(i).checkCompatWith(inPipes[i], lineN, currentCall);
 			}
 			
 		}
@@ -182,11 +186,11 @@ public class Interpreter {
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
-				Pipe p = nativ.getOut(i).getCopy(token, currentCall);
+				Pipe p = targetCall.getOut(i).getCopy(token, currentCall);
 				structure.pipeDefs.put(token, p);
 				outPipes[i] = p;
 			}
-			nativ.getOut(i).checkCompatWith(outPipes[i], lineN, currentCall); // TODO why did it say 0?
+			targetCall.getOut(i).checkCompatWith(outPipes[i], lineN, currentCall); // TODO why did it say 0?
 		}
 		return currentCall;
 		

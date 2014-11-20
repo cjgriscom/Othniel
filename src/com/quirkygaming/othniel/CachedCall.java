@@ -23,9 +23,12 @@ public class CachedCall {
 		call.call(ins, outs, this);
 	}
 	
-	public void resetRuntime() { // Must be called for inline structures before run
-		ins = defIns.clone();
-		outs = defOuts.clone();
+	public void resetRuntime(Structure parent) { // Must be called for instantiated structures before run
+		if (!(call instanceof Structure) || ((Structure)call).isInstantiated()) { // Native or instantiated
+			ins = defIns.clone();
+			outs = defOuts.clone();
+		}
+		
 	}
 	
 	public int getLine() {return lineN;}
