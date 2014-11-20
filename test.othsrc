@@ -2,7 +2,7 @@
 
 instantiated sequence test
 	[TRUE, 50]var0[^] [FALSE, 0]var0[>]PRINTLN
-	[TRUE, 51]var1[h] [FALSE, 0]var1[>]PRINTLN
+	[TRUE, 51]var1[^] [FALSE, 0]var1[>]PRINTLN
 	[TRUE, 52]var2[^] [FALSE, 0]var2[>]PRINTLN
 	[TRUE, 53]var3[^] [FALSE, 0]var3[>]PRINTLN
 	[TRUE, 54]var4[^] [TRUE, 54.5]var4Double[^] [FALSE, 0]var4[out1] [FALSE, 0]var4Double[>] [out1, ", ", <]PRINTLN

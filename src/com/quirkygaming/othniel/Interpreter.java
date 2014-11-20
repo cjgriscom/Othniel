@@ -171,7 +171,7 @@ public class Interpreter {
 			
 			ParseError.throwIf(token.equals("?"), lineN, "? not allowed in outputs");
 			ParseError.throwIf(token.equals("<"), lineN, "< not allowed in outputs");
-			ParseError.throwIf(token.equals("^") && targetCall.isInline(), lineN, "Inline calls can only accept tangible pipes (in case they are referenced as inputs)");
+			
 			if (token.equals(">")) {
 				token = "<" + (callN) + "." + refOutOccurance; // Create pipe reference
 				refOutOccurance++;

@@ -74,7 +74,16 @@ public class Structure extends Callable {
 	private Pipe[] runtimeOuts;
 	
 	public Pipe[] getIns(Pipe[] ins, CachedCall c) {
-		if (!isStatic() || !initializedIns) { // Static should only init once
+		if (isInline()) {
+			this.initializedIns = c.inlineInitiated(); // Check if the specific inline instance is initialized
+			this.initializedOuts = c.inlineInitiated();
+			if (c.inlineInitiated()) { // If it is, use its current values for this runtime.
+				this.runtimeIns = c.getInlineIns();
+				this.runtimeOuts = c.getInlineOuts();
+			}
+		}
+		
+		if (isInstantiated() || !initializedIns) { // Static should only init once
 			runtimeIns = new Pipe[this.inSize()];
 			for (int i = 0; i < this.inSize(); i++) {
 				if (ins[i] != null) {
@@ -84,8 +93,7 @@ public class Structure extends Callable {
 				}
 			}
 			initializedIns = true;
-		} else if (isInline()) {
-			return c.ins;
+			c.setInlineIns(runtimeIns); // If it's inline
 		} else {
 			for (int i = 0; i < this.inSize(); i++) {
 				if (ins[i] != null) runtimeIns[i].set(ins[i], c.getLine());
@@ -96,15 +104,14 @@ public class Structure extends Callable {
 	}
 	
 	public Pipe[] getOuts(Pipe[] outs, CachedCall c) {
-		if (!(isStatic() || isInline()) || !initializedOuts) { // Static should only init once
+		if (isInstantiated() || !initializedOuts) { // Static should only init once
 			runtimeOuts = new Pipe[outSize()];
 			for (int i = 0; i < outSize(); i++) {
 				runtimeOuts[i] = outputs[i].getCopy(c);
 			}
 			initializedOuts = true;
-		} else if (isInline()) {
-			return c.outs;
-		} 
+			c.setInlineOuts(runtimeOuts); // If it's inline
+		}
 		return runtimeOuts;
 	}
 	
@@ -129,7 +136,7 @@ public class Structure extends Callable {
 			innerCall.call();
 		}
 		
-		if (!isInline()) copyResult(outs, c); //TODO check & comment
+		copyResult(outs, c);
 	}
 	
 	private void replaceWaits(Pipe[] pipes, boolean isInput, Pipe[] inputPipes, Pipe[] outputPipes) {
