@@ -2,6 +2,20 @@ package com.quirkygaming.othniel;
 
 public class Keywords {
 	
+	// TODO Maybe add directive keywords, like #VALIDATE{}
+	
+	public enum Blocks {
+		ENDTAG("end");
+		
+		private String name;
+		private Blocks(String s) {
+			name = s;
+		}
+		public String toString() {
+			return name;
+		}
+	}
+	
 	public enum Privacy {
 		LOCAL("local"), GLOBAL("global");
 		
@@ -15,7 +29,7 @@ public class Keywords {
 	}
 	
 	public enum StructureType {
-		TYPEDEF("type"), STRUCTURE("structure"), DEFINITION("define");
+		TYPEDEF("typedef"), STRUCTURE("structure"), BLOCKDEF("blockdef");
 		
 		private String name;
 		private StructureType(String s) {
