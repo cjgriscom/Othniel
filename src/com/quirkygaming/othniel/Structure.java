@@ -1,7 +1,6 @@
 package com.quirkygaming.othniel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
@@ -12,7 +11,7 @@ import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
 import com.quirkygaming.othniel.pipes.UndefinedPipe;
 
-public class Structure extends Callable {
+public class Structure extends Callable implements PipeOwner {
 	
 	ArrayList<CachedCall> callList = new ArrayList<CachedCall>();
 	
@@ -21,7 +20,7 @@ public class Structure extends Callable {
 	private StructInput[] inputs;
 	private StructOutput[] outputs;
 	
-	public final PipeMap pipeDefs = new PipeMap();
+	private final PipeMap pipeDefs = new PipeMap();
 	
 	public Structure(ExecutionMode em, RunMode rm, StructInput[] inputs, StructOutput[] outputs, String name, int lineN) {
 		super(name, inputs, outputs);
@@ -139,6 +138,11 @@ public class Structure extends Callable {
 				}
 			}
 		}
+	}
+
+	@Override
+	public PipeMap pipeDefs() {
+		return pipeDefs;
 	}
 
 }

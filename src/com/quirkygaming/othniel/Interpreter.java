@@ -121,7 +121,7 @@ public class Interpreter {
 		return new Structure(em, rm, inputNodes, outputNodes, call.callName, call.lineN);
 	}
 	
-	private static CachedCall parseCall(ParsedCall call, Structure structure, int lineN, int callN) {
+	public static CachedCall parseCall(ParsedCall call, PipeOwner structure, int lineN, int callN) {
 		Callable targetCall = Callable.getCallable(call.callName);
 
 		ParseError.validate(targetCall != null, lineN, "Call not found: " + call.callName);
@@ -152,11 +152,11 @@ public class Interpreter {
 			} else {
 				Pipe cnst = Constants.matchConstant(token, lineN);
 				if (cnst == null) {
-					ParseError.verifySymbolRecognized(structure.pipeDefs.containsKey(token), lineN, token);
-					if (structure.pipeDefs.get(token) instanceof Pipe) {
-						inPipes[i] = (Pipe)structure.pipeDefs.get(token);
+					ParseError.verifySymbolRecognized(structure.pipeDefs().containsKey(token), lineN, token);
+					if (structure.pipeDefs().get(token) instanceof Pipe) {
+						inPipes[i] = (Pipe)structure.pipeDefs().get(token);
 					} else { //instanceof node
-						inPipes[i] = new UndefinedPipe((Node)structure.pipeDefs.get(token)); // The structure will handle the replacement
+						inPipes[i] = new UndefinedPipe((Node)structure.pipeDefs().get(token)); // The structure will handle the replacement
 					}
 				} else {
 					inPipes[i] = cnst;
@@ -179,16 +179,16 @@ public class Interpreter {
 			
 			if (token.equals(GarbagePipe.INSTANCE.getLabel())) {
 				outPipes[i] = GarbagePipe.INSTANCE;
-			} else if (structure.pipeDefs.containsKey(token)) {
-				if (structure.pipeDefs.get(token) instanceof Pipe) {
-					outPipes[i] = (Pipe)structure.pipeDefs.get(token);
+			} else if (structure.pipeDefs().containsKey(token)) {
+				if (structure.pipeDefs().get(token) instanceof Pipe) {
+					outPipes[i] = (Pipe)structure.pipeDefs().get(token);
 				} else { //instanceof node
-					outPipes[i] = new UndefinedPipe((Node)structure.pipeDefs.get(token)); // The structure will handle the replacement
+					outPipes[i] = new UndefinedPipe((Node)structure.pipeDefs().get(token)); // The structure will handle the replacement
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
 				Pipe p = targetCall.getOut(i).getCopy(token, currentCall);
-				structure.pipeDefs.put(token, p);
+				structure.pipeDefs().put(token, p);
 				outPipes[i] = p;
 			}
 			targetCall.getOut(i).checkCompatWith(outPipes[i], lineN, currentCall);
