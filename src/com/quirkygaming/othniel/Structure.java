@@ -61,7 +61,7 @@ public class Structure extends Callable {
 			}
 		}
 		
-		if (isInstantiated() || !initializedIns) { // Static should only init once
+		if (isInstantiated() || !initializedIns) { // Static/inline should only init once
 			runtimeIns = new Pipe[this.inSize()];
 			for (int i = 0; i < this.inSize(); i++) {
 				if (ins[i] != null) {
@@ -82,7 +82,7 @@ public class Structure extends Callable {
 	}
 	
 	public Pipe[] getOuts(Pipe[] outs, CachedCall c) {
-		if (isInstantiated() || !initializedOuts) { // Static should only init once
+		if (isInstantiated() || !initializedOuts) { // Static/inline should only init once
 			runtimeOuts = new Pipe[outSize()];
 			for (int i = 0; i < outSize(); i++) {
 				runtimeOuts[i] = outputs[i].getCopy(c);

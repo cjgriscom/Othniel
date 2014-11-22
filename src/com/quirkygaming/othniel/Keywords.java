@@ -4,6 +4,18 @@ public class Keywords {
 	
 	// TODO Maybe add directive keywords, like #VALIDATE{}
 	
+	public enum ConfNodeType {
+		STATEMENTSET("statements"), PIPE("pipe"), CONSTANT("constant");
+		
+		private String name;
+		private ConfNodeType(String s) {
+			name = s;
+		}
+		public String toString() {
+			return name;
+		}
+	}
+	
 	public enum Blocks {
 		ENDTAG("end");
 		

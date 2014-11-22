@@ -1,19 +1,42 @@
 package com.quirkygaming.othniel;
 
 import java.util.ArrayList;
-
 import com.quirkygaming.othniel.pipes.GarbagePipe;
 
 public class CallParser {
 	
+	public Object attachment; //TODO remove later
+	
+	private CodeLines lines = new CodeLines();
+	
 	private ArrayList<ParsedCall> calls = new ArrayList<ParsedCall>();
 	public class ParsedCall {
+		public int lineN;
 		public boolean isBlockStart = false;
 		public boolean isBlockEnd = false;
 		public String[] inParams;
 		public String[] outParams;
 		public String[] confNodes;
 		public String callName;
+		
+		public boolean qualifiesAsKeyword() {
+			return inParams.length == 0 && outParams.length == 0 && confNodes.length == 0 && !isBlockStart && !isBlockEnd;
+		}
+	}
+	
+	public CallParser() {}
+	
+	public void addLine(int lineN, String line) {
+		this.lines.addLine(lineN, line);
+	}
+	
+	public void parse() {
+		ArrayList<Component> components = separateComponents();
+		processIntoCalls(components);
+	}
+	
+	public void removeFirstN(int num) {
+		for(int i = 0; i < num; i++) calls.remove(0);
 	}
 	
 	public ParsedCall get(int index) {
@@ -33,18 +56,22 @@ public class CallParser {
 	}
 	
 	public static void main(String[] args) { // Test method
-		String line = "[pipe]uhh: "
-				+ "[o]:[p] s{var:I32=0}[ss] [s]:[^]a[var33, l] "
-				+ "if{[qwerty]:{stuff}[xyz],xyz]}: "
-				+ "[a]asd[b]op[p] "
-				+ ":elseif{corn}: "
-				+ ":end "
-				+ ":end";
-
-		for (Component com : separateComponents(line, 123)) System.out.print(com.type + " ");
-		System.out.println();
+		CallParser parser = new CallParser();
 		
-		CallParser parser = new CallParser(line, 123, false);
+		parser.addLine(0, "static sequence [pipe]function");
+		parser.addLine(1, "[o]:[p] s{var:I32=0}[ss] [s]:[^]a[var33, l] ");
+		parser.addLine(2, "if{[qwerty]:{stuff}[xyz],xyz]}: ");
+		parser.addLine(3, "[a]asd[b]op[p]");
+		parser.addLine(4, ":elseif{something}: ");
+		parser.addLine(5, ":elseif{somethingelse}: ");
+		parser.addLine(6, "static sequence2");
+		parser.addLine(7, ":end");
+		
+		for (Component com : parser.separateComponents()) System.out.print(com.type + " ");
+				System.out.println();
+		
+		parser.parse();
+		
 		int indent = 0;
 		
 		for (ParsedCall call : parser.calls) {
@@ -98,31 +125,24 @@ public class CallParser {
 		return ins;
 	}
 	
-	public CallParser(String line, int lineN, boolean isHeader) {
-		ArrayList<Component> components = separateComponents(line, lineN);
-		processIntoCalls(line, components, lineN);
-		if (isHeader) {
-			ParseError.validate(size() == 1, lineN, 
-					"Found " + size() + " definitions in header; 1 expected");
-		}
-	}
-	
 	final static int PARAMETER = 1;
 	final static int SPACE     = 2;
 	final static int CALL_NAME = 4;
 	final static int CONF_NODE = 8;
-	final static int COLON 	= 16;
+	final static int COLON     = 16;
 	private static class Component {
 		int type;
 		int beginIndex;
+		int lineN;
 		String content;
-		Component(int type, String content, int beginIndex) {
-			this.type = type; this.content = content.trim(); this.beginIndex = beginIndex;
+		Component(int type, String content, int beginIndex, int lineN) {
+			this.type = type; this.content = content.trim(); this.beginIndex = beginIndex; this.lineN = lineN;
 		}
-		Component(int beginIndex) {
+		Component(int beginIndex, int lineN) {
 			// For space
 			this.type = SPACE;
 			this.beginIndex = beginIndex;
+			this.lineN = lineN;
 		}
 		public String toString() {
 			switch (type) {
@@ -135,7 +155,7 @@ public class CallParser {
 		}
 	}
 	
-	private void processIntoCalls(String line, ArrayList<Component> components, int lineN) {
+	private void processIntoCalls(ArrayList<Component> components) {
 		int expected = PARAMETER + CALL_NAME + COLON;
 		ParsedCall currentCall = new ParsedCall();
 		int lastType = SPACE; // Coming off of another line, theoretically a space exists in between
@@ -143,7 +163,8 @@ public class CallParser {
 		Component c = null;
 		for (int i = 0; i < components.size(); i++) {
 			c = components.get(i);
-			ParseError.verifyExpectedBit(expected, c.type, lineN, "Unexpected " + c + " at index " + c.beginIndex + " following " + lastType);
+			currentCall.lineN = c.lineN;
+			ParseError.verifyExpectedBit(expected, c.type, c.lineN, "Unexpected " + c + " at index " + c.beginIndex);
 			lastType = type;
 			type = c.type;
 			if (type == PARAMETER) {
@@ -169,7 +190,7 @@ public class CallParser {
 				if (currentCall.outParams != null) { // Adjoined call
 					// Determine adjoined inputs and advance currentCall to new one
 					String[] newIns = adjoinedInsFromOuts(currentCall.outParams);
-					currentCall = advance(currentCall, lineN, c);
+					currentCall = advance(currentCall, c);
 					currentCall.inParams = newIns;
 				}
 				currentCall.callName = c.content;
@@ -188,7 +209,7 @@ public class CallParser {
 				currentCall.confNodes = cnodeArray;
 			} else if (c.type == SPACE) {
 				// Advance currentCall to new one
-				currentCall = advance(currentCall, lineN, c);
+				currentCall = advance(currentCall, c);
 				expected = PARAMETER + CALL_NAME + COLON;
 			} else if (c.type == COLON) {
 				if (lastType == SPACE) {
@@ -200,11 +221,11 @@ public class CallParser {
 				}
 			}
 		}
-		advance(currentCall, lineN, c);
+		advance(currentCall, c);
 	}
 	
-	private ParsedCall advance(ParsedCall currentCall, int lineN, Component c) {
-		ParseError.validate(currentCall.callName != null, lineN, "Floating parameters at index " + c.beginIndex); 
+	private ParsedCall advance(ParsedCall currentCall, Component c) {
+		ParseError.validate(currentCall.callName != null, c.lineN, "Floating parameters at index " + c.beginIndex); 
 		if (currentCall.inParams == null) currentCall.inParams = new String[0];
 		if (currentCall.outParams == null) currentCall.outParams = new String[0];
 		if (currentCall.confNodes == null) currentCall.confNodes = new String[0];
@@ -212,19 +233,18 @@ public class CallParser {
 		return new ParsedCall();
 	}
 	
-	private static ArrayList<Component> separateComponents(String line, int lineN) {
+	private ArrayList<Component> separateComponents() {
 		// Deconstruct line byte by byte
 		
 		ArrayList<Component> components = new ArrayList<Component>();
 		
-		int btbbrackets = line.indexOf("][");
-		if (btbbrackets == -1) btbbrackets = line.indexOf("}{");
-		ParseError.validate(btbbrackets == -1, lineN, "Encountered illegal brackets at index " + btbbrackets);
+		int btbbrackets = lines.indexOf("][");
+		if (btbbrackets == -1) btbbrackets = lines.indexOf("}{");
+		ParseError.validate(btbbrackets == -1, lines.lineNOfIndex(btbbrackets), "Encountered illegal brackets at index " + btbbrackets);
 		
 		int NOTHING = 0;
 		
 		int beginIndex = 0;
-		line = line.trim(); // Very important
 		
 		boolean inQuotes = false;
 		int curlyCount = 0;
@@ -232,29 +252,30 @@ public class CallParser {
 		char c;
 		boolean atEnd;
 		
-		for (int i = 0; i <= line.length(); i++) {
-			atEnd = i+1 == line.length(); // for colon checking
-			if (i == line.length()) {
-				ParseError.validate(current == NOTHING || current == CALL_NAME, lineN, "Expected closing bracket");
+		for (int i = 0; i <= lines.length(); i++) {
+			atEnd = i+1 == lines.length(); // for colon checking
+			if (i == lines.length()) {
+				ParseError.validate(current == NOTHING || current == CALL_NAME, lines.lineNOfIndex(i), "Expected closing bracket");
 				if (current == CALL_NAME) {
-					components.add(new Component(current, line.substring(beginIndex, i), beginIndex));
+					components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 				}
 				break;
 			} else {
-				c = line.charAt(i);
+				c = lines.charAt(i);
 			}
 			
-			if ((c == ' ' || c == '\t') && curlyCount == 0) { // Process space or tab IF
+			if (c <= ' ' && curlyCount == 0) { // Process space or tab IF
 				if (	current != PARAMETER && // Not a parameter list
 						current != CONF_NODE && // Not a list of conf nodes
-						components.size() >= 1 && // List has substantial length
-						components.get(components.size() - 1).type != SPACE // Last one wasn't a space
+						(components.size() == 0 || // At beginning of list
+						components.get(components.size() - 1).type != SPACE ||  // or Last one wasn't a space
+						current == CALL_NAME) // or we're in a call name
 						) {
 					if (current == CALL_NAME) {
-						components.add(new Component(current, line.substring(beginIndex, i), beginIndex));
+						components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 						current = NOTHING;
 					}
-					components.add(new Component(i)); // Add spaces between calls
+					components.add(new Component(lines.trueIndex(i), lines.lineNOfIndex(i))); // Add spaces between calls
 				}
 			} else if (inQuotes && curlyCount == 0) { // We want to ignore other symbols when in quotation marks
 				if (c == '"' || c == '\'') {
@@ -263,26 +284,26 @@ public class CallParser {
 			} else if ((c == '"' || c == '\'') && curlyCount == 0) { // If quotes found
 				ParseError.validate(
 						current == PARAMETER || current == CONF_NODE,
-						lineN,
-						"Encountered unexpected \" at index " + i);
+						lines.lineNOfIndex(i),
+						"Encountered unexpected \" at index " + lines.trueIndex(i));
 				inQuotes = true;
 			} else if (c == '[' && curlyCount == 0) { // Open params
 				ParseError.validate(
 						current == NOTHING || current == CALL_NAME,
-						lineN,
-						"Encountered unexpected [ at index " + i);
+						lines.lineNOfIndex(i),
+						"Encountered unexpected [ at index " + lines.trueIndex(i));
 				if (current == CALL_NAME)  // End of call
-					components.add(new Component(current, line.substring(beginIndex, i), beginIndex));
+					components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 				current = PARAMETER;
 				beginIndex = i + 1;
 			} else if (c == '{') { // Open conf nodes
 				if (curlyCount == 0) {
 					ParseError.validate(
 							current == NOTHING || current == CALL_NAME,
-							lineN,
-							"Encountered unexpected { at index " + i);
+							lines.lineNOfIndex(i),
+							"Encountered unexpected { at index " + lines.trueIndex(i));
 					if (current == CALL_NAME) // End of call
-						components.add(new Component(current, line.substring(beginIndex, i), beginIndex));
+						components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 					current = CONF_NODE;
 					beginIndex = i + 1;
 				}
@@ -291,39 +312,39 @@ public class CallParser {
 			} else if (c == ']' && curlyCount == 0) {
 				ParseError.validate(
 						current == PARAMETER,
-						lineN,
-						"Encountered unexpected ] at index " + i);
-				String item = line.substring(beginIndex, i);
-				components.add(new Component(current, item, beginIndex));
+						lines.lineNOfIndex(i),
+						"Encountered unexpected ] at index " + lines.trueIndex(i));
+				String item = lines.substring(beginIndex, i);
+				components.add(new Component(current, item, lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 				current = NOTHING;
 			} else if (c == '}') {
 				if (curlyCount <= 1) {
 					ParseError.validate(
 							current == CONF_NODE,
-							lineN,
-							"Encountered unexpected } at index " + i);
-					String item = line.substring(beginIndex, i);
-					components.add(new Component(current, item, beginIndex));
+							lines.lineNOfIndex(i),
+							"Encountered unexpected } at index " + lines.trueIndex(i));
+					String item = lines.substring(beginIndex, i);
+					components.add(new Component(current, item, lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 					current = NOTHING;
 				}
 				curlyCount--;
 			} else if (c == ',' && curlyCount <= 1) {
 				ParseError.validate(
 						current == PARAMETER || current == CONF_NODE,
-						lineN,
-						"Encountered unexpected , at index " + i);
-				components.add(new Component(current, line.substring(beginIndex, i), beginIndex));
+						lines.lineNOfIndex(i),
+						"Encountered unexpected , at index " + lines.trueIndex(i));
+				components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 				beginIndex = i + 1;
 			} else if (c == ':' && (current == NOTHING || current == CALL_NAME) &&
 					(
-							(atEnd || line.charAt(i+1) == ' ' || line.charAt(i+1) == '\t') ||  // Make sure it's not a : or ?: native
-							(i == 0 || line.charAt(i-1) == ' ' || line.charAt(i-1) == '\t')
+							(atEnd || lines.charAt(i+1) <= ' ') ||  // Make sure it's not a : or ?: native
+							(i == 0 || lines.charAt(i-1) <= ' ')
 					) ) {
 				if (current == CALL_NAME) { // End of call
-					components.add(new Component(current, line.substring(beginIndex, i), beginIndex));
+					components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
 					current = NOTHING;
 				}
-				components.add(new Component(COLON, "", i));
+				components.add(new Component(COLON, "", lines.trueIndex(i), lines.lineNOfIndex(i)));
 			} else { 
 				if (current == NOTHING) {
 					current = CALL_NAME;
@@ -332,6 +353,10 @@ public class CallParser {
 			}
 		}
 		return components;
+	}
+
+	public boolean isEmpty() {
+		return this.lines.length() == 0;
 	}
 	
 }
