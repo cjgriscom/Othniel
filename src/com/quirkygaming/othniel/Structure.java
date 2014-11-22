@@ -21,7 +21,7 @@ public class Structure extends Callable {
 	private StructInput[] inputs;
 	private StructOutput[] outputs;
 	
-	public final HashMap<String, PipeDef> pipeDefs = new HashMap<String, PipeDef>();
+	public final PipeMap pipeDefs = new PipeMap();
 	
 	public Structure(ExecutionMode em, RunMode rm, StructInput[] inputs, StructOutput[] outputs, String name, int lineN) {
 		super(name, inputs, outputs);
