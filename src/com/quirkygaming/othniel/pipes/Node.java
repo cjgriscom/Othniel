@@ -5,7 +5,7 @@ import com.quirkygaming.othniel.Datatype;
 import com.quirkygaming.othniel.ParseError;
 import com.quirkygaming.othniel.RuntimeError;
 
-public abstract class Node extends PipeDef {
+public abstract class Node extends PipeDef { // TODO rename to Terminal
 	protected Pipe definition;
 	
 	protected Node(Pipe definition) {
