@@ -32,10 +32,9 @@ public class Interpreter {
 		
 		HashMap<String, Callable> retrievedCalls = new HashMap<String, Callable>();
 		
-		int lineN = 0;
-		
 		try (Scanner in = new Scanner(file)){ // Attempt to read file
 			CallParser curParser = new CallParser();
+			int lineN = 0;
 			while (in.hasNextLine()) {
 				
 				String line = in.nextLine().trim(); lineN++;
@@ -77,7 +76,6 @@ public class Interpreter {
 						parseCall(call, newStructure, call.lineN, newStructure.callList.size()));
 			}
 		}
-		
 		
 		return retrievedCalls;
 	}
