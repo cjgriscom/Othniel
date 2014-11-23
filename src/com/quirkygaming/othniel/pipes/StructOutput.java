@@ -1,6 +1,6 @@
 package com.quirkygaming.othniel.pipes;
 
-public class StructOutput extends Node {
+public class StructOutput extends Terminal {
 	
 	public StructOutput(Pipe definition) {
 		super(definition);

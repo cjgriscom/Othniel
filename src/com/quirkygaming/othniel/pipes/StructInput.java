@@ -1,6 +1,6 @@
 package com.quirkygaming.othniel.pipes;
 
-public class StructInput extends Node {
+public class StructInput extends Terminal {
 	
 	private boolean isOptional;
 	

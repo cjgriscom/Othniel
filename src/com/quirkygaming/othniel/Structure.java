@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
-import com.quirkygaming.othniel.pipes.Node;
+import com.quirkygaming.othniel.pipes.Terminal;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.PipeDef;
 import com.quirkygaming.othniel.pipes.StructInput;
@@ -29,12 +29,12 @@ public class Structure extends Callable implements PipeOwner {
 		ParseError.validate(rm == RunMode.SEQUENTIAL, lineN, "Error: Parallel execution not yet implemented");
 		this.inputs = inputs;
 		this.outputs = outputs;
-		for (Node pd : inputs) {
+		for (Terminal pd : inputs) {
 			ParseError.throwIf(pd.isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
 			ParseError.throwIf(pipeDefs.containsKey(pd.getLabel()), lineN, "Duplicate pipe symbol: " + pd.getLabel());
 			pipeDefs.put(pd.getLabel(), pd);
 		}
-		for (Node pd : outputs) {
+		for (Terminal pd : outputs) {
 			ParseError.throwIf(pd.isAbstract() && isStatic(), lineN, "Abstract or implicit types not allowed in static methods");
 			ParseError.throwIf(pipeDefs.containsKey(pd.getLabel()), lineN, "Duplicate pipe symbol: " + pd.getLabel());
 			pipeDefs.put(pd.getLabel(), pd);

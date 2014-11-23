@@ -5,12 +5,12 @@ import com.quirkygaming.othniel.Datatype;
 import com.quirkygaming.othniel.ParseError;
 import com.quirkygaming.othniel.RuntimeError;
 
-public abstract class Node extends PipeDef { // TODO rename to Terminal
+public abstract class Terminal extends PipeDef {
 	protected Pipe definition;
 	
-	protected Node(Pipe definition) {
+	protected Terminal(Pipe definition) {
 		this.definition = definition;
-		this.label = definition.label; //TODO correct?
+		this.label = definition.label;
 		this.type = definition.type;
 	}
 	

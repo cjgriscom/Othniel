@@ -11,7 +11,7 @@ import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
 import com.quirkygaming.othniel.confnodes.ConfNode;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
-import com.quirkygaming.othniel.pipes.Node;
+import com.quirkygaming.othniel.pipes.Terminal;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
@@ -158,7 +158,7 @@ public class Interpreter {
 					if (structure.pipeDefs().get(token) instanceof Pipe) {
 						inPipes[i] = (Pipe)structure.pipeDefs().get(token);
 					} else { //instanceof node
-						inPipes[i] = new UndefinedPipe((Node)structure.pipeDefs().get(token)); // The structure will handle the replacement
+						inPipes[i] = new UndefinedPipe((Terminal)structure.pipeDefs().get(token)); // The structure will handle the replacement
 					}
 				} else {
 					inPipes[i] = cnst;
@@ -185,7 +185,7 @@ public class Interpreter {
 				if (structure.pipeDefs().get(token) instanceof Pipe) {
 					outPipes[i] = (Pipe)structure.pipeDefs().get(token);
 				} else { //instanceof node
-					outPipes[i] = new UndefinedPipe((Node)structure.pipeDefs().get(token)); // The structure will handle the replacement
+					outPipes[i] = new UndefinedPipe((Terminal)structure.pipeDefs().get(token)); // The structure will handle the replacement
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);

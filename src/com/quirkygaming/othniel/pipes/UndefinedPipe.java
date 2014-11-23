@@ -13,7 +13,7 @@ public class UndefinedPipe extends Pipe {
 		super(label, abstractType);
 	}
 	
-	public UndefinedPipe(Node p) {
+	public UndefinedPipe(Terminal p) {
 		super(p.definition.getLabel(), p.definition.type());
 		waiting = true;
 	}
