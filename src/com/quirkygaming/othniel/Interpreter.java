@@ -129,6 +129,7 @@ public class Interpreter {
 
 		ParseError.validate(call.inParams.length == targetCall.inSize() || targetCall.inputsArbitrary(), lineN, "Number of inputs does not match");
 		ParseError.validate(call.outParams.length == targetCall.outSize(), lineN, "Number of outputs does not match");
+		ParseError.validate(call.confNodes.length == targetCall.confNodes(), lineN, "Number of configuration nodes does not match");
 		
 		Pipe inPipes[] = new Pipe[call.inParams.length];
 		Pipe outPipes[] = new Pipe[call.outParams.length];
