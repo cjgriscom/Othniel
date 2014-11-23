@@ -50,9 +50,11 @@ public abstract class Callable {
 			return ins[index];
 		}
 	}
-	
 	public StructOutput getOut(int index) {
 		return outs[index];
+	}
+	public ConfNodeType getConfNodeType(int index) {
+		return confNodes[index];
 	}
 	
 	public final String name() {

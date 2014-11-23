@@ -4,6 +4,9 @@ instantiated sequence test
 	[TRUE]:[someBoolean]
 	[12]:[a]
 	
+	EXECUTE{[a]++[a] ["EXECUTE: ", a, " is the new value of a"]PRINTLN}
+	["Main: a=", a]PRINTLN
+	
 	//if{ [a,11]>=[con1] [a,12]<=[con2] [con1, con2]AND[>], < }: // {optional:statements, boolean}
 	//	[TRUE]:[result]
 	//:elseif{someBoolean}:

@@ -9,7 +9,6 @@ import com.quirkygaming.othniel.Interpreter;
 import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.PipeMap;
 import com.quirkygaming.othniel.PipeOwner;
-import com.quirkygaming.othniel.Structure;
 
 public class StatementSet implements ConfNode, PipeOwner {
 	
@@ -19,8 +18,8 @@ public class StatementSet implements ConfNode, PipeOwner {
 	
 	private final PipeMap pipeDefs;
 	
-	public StatementSet(String code, CachedCall c, String parentName, Structure parent, int nodeIndex) {
-		name = parentName + ".ConfNode" + nodeIndex + "StatementSet";
+	public StatementSet(String code, CachedCall c, PipeOwner parent, int nodeIndex) {
+		name = parent.name() + ".ConfNode" + nodeIndex + "StatementSet";
 		this.nodeIndex = nodeIndex;
 		this.pipeDefs = new PipeMap(parent.pipeDefs());
 		
@@ -48,6 +47,11 @@ public class StatementSet implements ConfNode, PipeOwner {
 	@Override
 	public PipeMap pipeDefs() {
 		return pipeDefs;
+	}
+
+	@Override
+	public String name() {
+		return name;
 	}
 
 }

@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import com.quirkygaming.othniel.CallParser.ParsedCall;
+import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
 import com.quirkygaming.othniel.confnodes.ConfNode;
+import com.quirkygaming.othniel.confnodes.StatementSet;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
 import com.quirkygaming.othniel.pipes.Terminal;
 import com.quirkygaming.othniel.pipes.Pipe;
@@ -196,6 +198,14 @@ public class Interpreter {
 			}
 			targetCall.getOut(i).checkCompatWith(outPipes[i], lineN, currentCall);
 		}
+		
+		for (int i = 0; i < call.confNodes.length; i++) {
+			String token = call.confNodes[i].trim();
+			if (targetCall.getConfNodeType(i) == ConfNodeType.STATEMENTSET) {
+				currentCall.confNodes[i] = new StatementSet(token, currentCall, structure, i);
+			} // TODO implement other types of ConfNodes
+		}
+		
 		return currentCall;
 		
 	}

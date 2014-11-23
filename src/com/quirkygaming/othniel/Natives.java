@@ -3,10 +3,18 @@ package com.quirkygaming.othniel;
 import java.util.Scanner;
 
 import com.quirkygaming.othniel.CompOps.COp;
+import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.MathOps.Op;
+import com.quirkygaming.othniel.confnodes.ConfNode;
+import com.quirkygaming.othniel.confnodes.StatementSet;
 import com.quirkygaming.othniel.pipes.BoolPipe;
 import com.quirkygaming.othniel.pipes.NumericPipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.*;
+import com.quirkygaming.othniel.pipes.NumericPipe.DoublePipe;
+import com.quirkygaming.othniel.pipes.NumericPipe.I16Pipe;
+import com.quirkygaming.othniel.pipes.NumericPipe.I32Pipe;
+import com.quirkygaming.othniel.pipes.NumericPipe.I64Pipe;
+import com.quirkygaming.othniel.pipes.NumericPipe.I8Pipe;
+import com.quirkygaming.othniel.pipes.NumericPipe.SinglePipe;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StringPipe;
 import com.quirkygaming.othniel.pipes.StructInput;
@@ -18,6 +26,7 @@ public class Natives {
 	private static Scanner in = new Scanner(System.in);
 	
 	static void initNatives() {
+		new Exec("EXECUTE");
 		new Input("INPUT");
 		new InputLine("INPUTLN");
 		new Print(false, "PRINT");
@@ -51,6 +60,10 @@ public class Natives {
 			super(name, ins, outs);
 		}
 		
+		public Native(String name, StructInput[] ins, StructOutput[] outs, ConfNodeType[] confNodes) {
+			super(name, ins, outs, confNodes);
+		}
+		
 		public Native(String name, StructInput[] ins, StructOutput[] outs, boolean inputsArbitrary) {
 			super(name, ins, outs, inputsArbitrary);
 		}
@@ -71,15 +84,32 @@ public class Natives {
 				Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
 			}
 			this.c = c;
-			call(runtimeIns,runtimeOuts); // Forward to actual natives
+			call(runtimeIns,runtimeOuts,c.confNodes); // Forward to actual natives
 		}
 		
 		public abstract void call(Pipe[] ins, Pipe[] outs);
+		public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
+			this.call(ins, outs);
+		}
 		
 		public boolean isStatic() {return false;}
 		public boolean isInstantiated() {return true;}
 		public boolean isInline() {return false;}
 		
+	}
+	
+	static class Exec extends Native {
+
+		public Exec(String name) {
+			super(name, new StructInput[0], new StructOutput[0], new ConfNodeType[]{ConfNodeType.STATEMENTSET});
+		}
+
+		@Override
+		public void call(Pipe[] ins, Pipe[] outs) {}
+		@Override
+		public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
+			((StatementSet)confNodes[0]).call();
+		}
 	}
 	
 	static class Input extends Native {
