@@ -60,12 +60,13 @@ public class CallParser {
 		
 		parser.addLine(0, "static sequence [pipe]function");
 		parser.addLine(1, "[o]:[p] s{var:I32=0}[ss] [s]:[^]a[var33, l] ");
-		parser.addLine(2, "if{[qwerty]:{stuff}[xyz],xyz]}: ");
+		parser.addLine(2, "if{[qwerty]:{stuff}[xyz],xyz}: ");
 		parser.addLine(3, "[a]asd[b]op[p]");
-		parser.addLine(4, ":elseif{something}: ");
+		parser.addLine(4, ":elseif{something}:");
 		parser.addLine(5, ":elseif{somethingelse}: ");
 		parser.addLine(6, "static sequence2");
 		parser.addLine(7, ":end");
+		parser.addLine(8, "EXECUTE{[a]:[>] [<, \" is sweet\"]PRINTLN, lol}");
 		
 		for (Component com : parser.separateComponents()) System.out.print(com.type + " ");
 				System.out.println();
@@ -287,15 +288,19 @@ public class CallParser {
 						lines.lineNOfIndex(i),
 						"Encountered unexpected \" at index " + lines.trueIndex(i));
 				inQuotes = true;
-			} else if (c == '[' && curlyCount == 0) { // Open params
-				ParseError.validate(
-						current == NOTHING || current == CALL_NAME,
-						lines.lineNOfIndex(i),
-						"Encountered unexpected [ at index " + lines.trueIndex(i));
-				if (current == CALL_NAME)  // End of call
-					components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
-				current = PARAMETER;
-				beginIndex = i + 1;
+			} else if (c == '[') { // Open params
+				if (curlyCount == 0) {
+					ParseError.validate(
+							current == NOTHING || current == CALL_NAME,
+							lines.lineNOfIndex(i),
+							"Encountered unexpected [ at index " + lines.trueIndex(i));
+					if (current == CALL_NAME)  // End of call
+						components.add(new Component(current, lines.substring(beginIndex, i), lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
+					current = PARAMETER;
+					beginIndex = i + 1;
+				} else {
+					curlyCount++;
+				}
 			} else if (c == '{') { // Open conf nodes
 				if (curlyCount == 0) {
 					ParseError.validate(
@@ -309,14 +314,18 @@ public class CallParser {
 				}
 				curlyCount++;
 				
-			} else if (c == ']' && curlyCount == 0) {
-				ParseError.validate(
-						current == PARAMETER,
-						lines.lineNOfIndex(i),
-						"Encountered unexpected ] at index " + lines.trueIndex(i));
-				String item = lines.substring(beginIndex, i);
-				components.add(new Component(current, item, lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
-				current = NOTHING;
+			} else if (c == ']') {
+				if (curlyCount == 0) {
+					ParseError.validate(
+							current == PARAMETER,
+							lines.lineNOfIndex(i),
+							"Encountered unexpected ] at index " + lines.trueIndex(i));
+					String item = lines.substring(beginIndex, i);
+					components.add(new Component(current, item, lines.trueIndex(beginIndex), lines.lineNOfIndex(i)));
+					current = NOTHING;
+				} else {
+					curlyCount--;
+				}
 			} else if (c == '}') {
 				if (curlyCount <= 1) {
 					ParseError.validate(
