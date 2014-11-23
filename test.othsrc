@@ -1,7 +1,26 @@
 //TODO check for valid pipe names and method names
 
 instantiated sequence test
-	declare{lol}
+	[TRUE]:[someBoolean]
+	[12]:[a]
+	
+	//if{ [a,11]>=[con1] [a,12]<=[con2] [con1, con2]AND[>], < }: // {optional:statements, boolean}
+	//	[TRUE]:[result]
+	//:elseif{someBoolean}:
+	//	[FALSE]:[result]
+	//:end[result]	//'if' is a compound block; anything piped out through end[] must be defined in each part of the block
+	
+	//[result]PRINTLN
+	
+	//select{ a }:
+	//	case
+	//:END
+	
+	//block:
+	//	[42]:[theAnswer]	
+	//:end[theAnswer]
+	//[theAnswer]PRINTLN
+	
 	[TRUE, 50]var0[^] [FALSE, 0]var0[>]PRINTLN
 	[TRUE, 51]var1[^] [FALSE, 0]var1[>]PRINTLN
 	[TRUE, 52]var2[^] [FALSE, 0]var2[>]PRINTLN

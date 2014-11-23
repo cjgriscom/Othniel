@@ -1,5 +1,6 @@
 package com.quirkygaming.othniel;
 
+import com.quirkygaming.othniel.confnodes.ConfNode;
 import com.quirkygaming.othniel.pipes.Pipe;
 
 public class CachedCall {
@@ -8,16 +9,18 @@ public class CachedCall {
 	private int inlineInit = 0;
 	public Pipe[] ins;
 	public Pipe[] outs;
+	public ConfNode[] confNodes;
 	private Callable call;
 	private int lineN;
 	
-	public CachedCall(Pipe[] ins, Callable call, Pipe[] outs, int lineN) {
+	public CachedCall(Pipe[] ins, Callable call, ConfNode[] confNodes, Pipe[] outs, int lineN) {
 		this.defIns = ins;
 		this.defOuts = outs;
 		this.call = call;
 		this.lineN = lineN;
 		this.ins = ins;
 		this.outs = outs;
+		this.confNodes = confNodes;
 	}
 
 	public void call() {

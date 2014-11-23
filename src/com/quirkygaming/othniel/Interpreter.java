@@ -9,6 +9,7 @@ import java.util.Scanner;
 import com.quirkygaming.othniel.CallParser.ParsedCall;
 import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
+import com.quirkygaming.othniel.confnodes.ConfNode;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
 import com.quirkygaming.othniel.pipes.Node;
 import com.quirkygaming.othniel.pipes.Pipe;
@@ -22,7 +23,7 @@ public class Interpreter {
 		Natives.initNatives();
 		Callable main = cacheFile("test.othsrc").get("test");
 		
-		main.call(new Pipe[0], new Pipe[0], new CachedCall(new Pipe[0], main, new Pipe[0], -1));
+		main.call(new Pipe[0], new Pipe[0], new CachedCall(new Pipe[0], main, new ConfNode[0], new Pipe[0], -1));
 	}
 
 	public static HashMap<String, Callable> cacheFile(String filename) {
@@ -131,8 +132,9 @@ public class Interpreter {
 		
 		Pipe inPipes[] = new Pipe[call.inParams.length];
 		Pipe outPipes[] = new Pipe[call.outParams.length];
+		ConfNode confNodes[] = new ConfNode[call.confNodes.length];
 		
-		CachedCall currentCall = new CachedCall(inPipes, targetCall, outPipes, lineN);
+		CachedCall currentCall = new CachedCall(inPipes, targetCall, confNodes, outPipes, lineN);
 		
 		int refInOccurance = 0; // For < and >
 		int refOutOccurance = 0; // For < and >
