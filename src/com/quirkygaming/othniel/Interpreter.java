@@ -11,6 +11,7 @@ import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
 import com.quirkygaming.othniel.confnodes.ConfConstant;
+import com.quirkygaming.othniel.confnodes.ConfLabel;
 import com.quirkygaming.othniel.confnodes.ConfNode;
 import com.quirkygaming.othniel.confnodes.ConfPipeType;
 import com.quirkygaming.othniel.confnodes.StatementSet;
@@ -152,6 +153,8 @@ public class Interpreter {
 				currentCall.confNodes[i] = new ConfConstant(targetCall.getConfNodeType(i), token, currentCall, i);
 			} else if (targetCall.getConfNodeType(i).equals(ConfNodeType.PIPETYPE)) {
 				currentCall.confNodes[i] = new ConfPipeType(token, currentCall, i);
+			} else if (targetCall.getConfNodeType(i).equals(ConfNodeType.LABEL)) {
+				currentCall.confNodes[i] = new ConfLabel(token, i);
 			}
 		}
 		

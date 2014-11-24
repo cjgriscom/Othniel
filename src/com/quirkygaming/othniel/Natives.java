@@ -5,7 +5,7 @@ import java.util.Scanner;
 import com.quirkygaming.othniel.CompOps.COp;
 import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.MathOps.Op;
-import com.quirkygaming.othniel.confnodes.ConfConstant;
+import com.quirkygaming.othniel.confnodes.ConfLabel;
 import com.quirkygaming.othniel.confnodes.ConfNode;
 import com.quirkygaming.othniel.confnodes.ConfPipeType;
 import com.quirkygaming.othniel.confnodes.StatementSet;
@@ -54,13 +54,12 @@ public class Natives {
 		public PipeExists(String name) {
 			super(name, new StructInput[0], 
 					new StructOutput[]{new StructOutput(new BoolPipe("exists"))}, 
-					new ConfNodeType[]{ConfNodeType.CONSTANT(Datatype.String)});
+					new ConfNodeType[]{ConfNodeType.LABEL});
 		}
 		
 		@Override
 		public CachedCall directive(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes, CachedCall c) {
-			Pipe p = ((ConfConstant)confNodes[0]).getPipe();
-			String label = ((StringPipe)p).value;
+			String label = ((ConfLabel)confNodes[0]).getLabel();
 			BoolPipe result = new BoolPipe("PIPEEXISTS", c.parent.pipeDefs().containsKey(label));
 			
 			return new CachedCall(

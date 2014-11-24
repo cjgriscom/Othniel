@@ -14,7 +14,8 @@ instantiated sequence test
 		["Value of hidden var in execute scope is: ", hiddenVar]PRINTLN
 	}
 	
-	#PIPEEXISTS{"hiddenVar"}[>] [<, "exists!", "does not exist."]?:[>] ["hiddenVar ", <]PRINTLN
+	#PIPEEXISTS{a}[>] [<, "exists!", "does not exist."]?:[>] ["a ", <]PRINTLN
+	#PIPEEXISTS{hiddenVar}[>] [<, "exists!", "does not exist."]?:[>] ["hiddenVar ", <]PRINTLN
 	
 	//if{ [a,11]>=[con1] [a,12]<=[con2] [con1, con2]AND[>], < }: // {optional:statements, boolean}
 	//	[TRUE]:[result]
@@ -96,5 +97,5 @@ static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 	[bool1, bool2]NAND[>] ["Result of NAND: ", <]PRINTLN
 	[bool1, bool2]NOR[>]  ["Result of NOR:  ", <]PRINTLN
 
-instantiated sequence [a:Anything, b:Anything]SWAP[newA:typeof a, newB:typeof b]
+instantiated sequence [a:Anything, b:typeof a]SWAP[newA:typeof a, newB:typeof a]
 	[a]:[newB] [b]:[newA]

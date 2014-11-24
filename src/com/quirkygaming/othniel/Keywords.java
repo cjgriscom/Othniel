@@ -7,6 +7,7 @@ public class Keywords {
 	public static class ConfNodeType {
 		public static ConfNodeType STATEMENTSET = new ConfNodeType("statements");
 		public static ConfNodeType PIPETYPE = new ConfNodeType("datatype");
+		public static ConfNodeType LABEL = new ConfNodeType("label");
 		
 		private String name;
 		private Object data = null;
