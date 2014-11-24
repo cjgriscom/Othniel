@@ -1,6 +1,12 @@
 //TODO check for valid pipe names and method names
 
 instantiated sequence test
+	["1st pass:"]PRINT ["1st message"]shiftRegister[>]PRINTLN
+	["2nd pass:"]PRINT [?]shiftRegister[>]PRINTLN
+	["3rd pass:"]PRINT [?]shiftRegister[>]PRINTLN
+	["4th pass:"]PRINT ["4th message"]shiftRegister[>]PRINTLN
+	["5th pass:"]PRINT [?]shiftRegister[>]PRINTLN
+	
 	[TRUE]:[someBoolean]
 	[12]:[a]
 	
@@ -35,7 +41,7 @@ instantiated sequence test
 	//:end[theAnswer]
 	//[theAnswer]PRINTLN
 	
-	[TRUE, 50]var0[^] [FALSE, 0]var0[>]PRINTLN
+	[TRUE, 50]var0[^] [FALSE, ?]var0[>]PRINTLN
 	[TRUE, 51]var1[^] [FALSE, 0]var1[>]PRINTLN
 	[TRUE, 52]var2[^] [FALSE, 0]var2[>]PRINTLN
 	[TRUE, 53]var3[^] [FALSE, 0]var3[>]PRINTLN
@@ -67,7 +73,7 @@ instantiated sequence test
 	["Min of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[>, ^] [<]PRINTLN
 	["Max of ", int1, " and ", int2, ": "]PRINT [int1,int2]MINMAX[^, >]PRINTLN
 
-static sequence [write:Bool, value:I32]var0[glob:I32] // Should behave statically
+static sequence [write:Bool, value:I32=0]var0[glob:I32] // Should behave statically
 	[write, value, glob]?:[glob]
 	
 inline sequence [write:Bool, value:Anything]var1[glob:typeof value] // Should not
@@ -100,3 +106,11 @@ static sequence [bool1:Bool, bool2:Bool]printBooleanOps
 
 instantiated sequence [a:Anything, b:typeof a]SWAP[newA:typeof a, newB:typeof a]
 	[a]:[newB] [b]:[newA]
+
+static sequence [input:String="defaultValue"]shiftRegister[result:String="emptyRegister"]
+	[FALSE, ""]regHelper[result]
+	[TRUE, input]regHelper[^]
+	
+static sequence [write:Bool, value:String]regHelper[glob:String] [write, value]var1[glob]
+	
+	
