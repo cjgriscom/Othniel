@@ -5,16 +5,12 @@ import java.util.Scanner;
 import com.quirkygaming.othniel.CompOps.COp;
 import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.MathOps.Op;
+import com.quirkygaming.othniel.confnodes.ConfConstant;
 import com.quirkygaming.othniel.confnodes.ConfNode;
+import com.quirkygaming.othniel.confnodes.ConfPipeType;
 import com.quirkygaming.othniel.confnodes.StatementSet;
 import com.quirkygaming.othniel.pipes.BoolPipe;
 import com.quirkygaming.othniel.pipes.NumericPipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.DoublePipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.I16Pipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.I32Pipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.I64Pipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.I8Pipe;
-import com.quirkygaming.othniel.pipes.NumericPipe.SinglePipe;
 import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StringPipe;
 import com.quirkygaming.othniel.pipes.StructInput;
@@ -26,6 +22,7 @@ public class Natives {
 	private static Scanner in = new Scanner(System.in);
 	
 	static void initNatives() {
+		new PipeExists("#PIPEEXISTS");
 		new Exec("EXECUTE");
 		new Input("INPUT");
 		new InputLine("INPUTLN");
@@ -52,50 +49,28 @@ public class Natives {
 		Interpreter.cacheFile("Natives.othsrc").values(); // Load natives file
 	}
 	
-	abstract static class Native extends Callable {
+	static class PipeExists extends Directive {
 		
-		CachedCall c;
-		
-		public Native(String name, StructInput[] ins, StructOutput[] outs) {
-			super(name, ins, outs);
-		}
-		
-		public Native(String name, StructInput[] ins, StructOutput[] outs, ConfNodeType[] confNodes) {
-			super(name, ins, outs, confNodes);
-		}
-		
-		public Native(String name, StructInput[] ins, StructOutput[] outs, boolean inputsArbitrary) {
-			super(name, ins, outs, inputsArbitrary);
+		public PipeExists(String name) {
+			super(name, new StructInput[0], 
+					new StructOutput[]{new StructOutput(new BoolPipe("exists"))}, 
+					new ConfNodeType[]{ConfNodeType.CONSTANT(Datatype.String)});
 		}
 		
 		@Override
-		public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
-			// Loop through ins and outs and if any are defined implicitly, verify their type correctness
-			for (int i = 0; i < inSize(); i++) {
-				Pipe reqType = getIn(i).definition();
-				if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c);
-				else continue;
-				Pipe.checkCompat(runtimeIns[i], reqType, c.getLine());
-			}
-			for (int i = 0; i < outSize(); i++) {
-				Pipe reqType = getOut(i).definition();
-				if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c);
-				else continue;
-				Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
-			}
-			this.c = c;
-			call(runtimeIns,runtimeOuts,c.confNodes); // Forward to actual natives
+		public CachedCall directive(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes, CachedCall c) {
+			Pipe p = ((ConfConstant)confNodes[0]).getPipe();
+			String label = ((StringPipe)p).value;
+			BoolPipe result = new BoolPipe("PIPEEXISTS", c.parent.pipeDefs().containsKey(label));
+			
+			return new CachedCall(
+					new Pipe[]{result}, 
+					Callable.getCallable(":"), 
+					new ConfNode[]{}, 
+					outs, 
+					c.getLine(), 
+					c.parent);
 		}
-		
-		public abstract void call(Pipe[] ins, Pipe[] outs);
-		public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
-			this.call(ins, outs);
-		}
-		
-		public boolean isStatic() {return false;}
-		public boolean isInstantiated() {return true;}
-		public boolean isInline() {return false;}
-		
 	}
 	
 	static class Exec extends Native {
@@ -103,9 +78,7 @@ public class Natives {
 		public Exec(String name) {
 			super(name, new StructInput[0], new StructOutput[0], new ConfNodeType[]{ConfNodeType.STATEMENTSET});
 		}
-
-		@Override
-		public void call(Pipe[] ins, Pipe[] outs) {}
+		
 		@Override
 		public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
 			((StatementSet)confNodes[0]).call();
@@ -115,28 +88,30 @@ public class Natives {
 	static class Input extends Native {
 		public Input(String name) {
 			super(	name,
-					new StructInput[]{new StructInput(new UndefinedPipe("inputType", Datatype.Anything))},
-					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0, Datatype.Anything))});
+					new StructInput[0],
+					new StructOutput[]{new StructOutput(new UndefinedPipe("result", 0, Datatype.Anything, true))},
+					new ConfNodeType[]{ConfNodeType.PIPETYPE});
 		}
-		public void call(Pipe[] ins, Pipe[] outs) {
-			if (ins[0] instanceof I8Pipe) {
+		public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
+			Datatype type = ((ConfPipeType)confNodes[0]).getPipeType();
+			if (type == Datatype.I8) {
 				((NumericPipe.I8Pipe)outs[0]).value = in.nextByte();
-			} else if (ins[0] instanceof I16Pipe) {
+			} else if (type == Datatype.I16) {
 				((NumericPipe.I16Pipe)outs[0]).value = in.nextShort();
-			} else if (ins[0] instanceof I32Pipe) {
+			} else if (type == Datatype.I32) {
 				((NumericPipe.I32Pipe)outs[0]).value = in.nextInt();
-			} else if (ins[0] instanceof I64Pipe) {
+			} else if (type == Datatype.I64) {
 				((NumericPipe.I64Pipe)outs[0]).value = in.nextLong();
-			} else if (ins[0] instanceof SinglePipe) {
+			} else if (type == Datatype.Single) {
 				((NumericPipe.SinglePipe)outs[0]).value = in.nextFloat();
-			} else if (ins[0] instanceof DoublePipe) {
+			} else if (type == Datatype.Double) {
 				((NumericPipe.DoublePipe)outs[0]).value = in.nextDouble();
-			} else if (ins[0] instanceof StringPipe) {
+			} else if (type == Datatype.String) {
 				((StringPipe)outs[0]).value = in.next();
-			} else if (ins[0] instanceof BoolPipe) {
+			} else if (type == Datatype.Bool) {
 				((BoolPipe)outs[0]).value = in.nextBoolean();
 			} else {
-				RuntimeError.throwIf(true, c.getLine(), ins[0].type() + " not supported for INPUT");
+				RuntimeError.throwIf(true, c.getLine(), type + " not supported for INPUT");
 			}
 		}
 	}
@@ -270,4 +245,77 @@ public class Natives {
 			}
 		}
 	}
+}
+
+abstract class Native extends Callable {
+	
+	CachedCall c;
+	
+	public Native(String name, StructInput[] ins, StructOutput[] outs) {
+		super(name, ins, outs);
+	}
+	
+	public Native(String name, StructInput[] ins, StructOutput[] outs, ConfNodeType[] confNodes) {
+		super(name, ins, outs, confNodes);
+	}
+	
+	public Native(String name, StructInput[] ins, StructOutput[] outs, boolean inputsArbitrary) {
+		super(name, ins, outs, inputsArbitrary);
+	}
+	
+	protected void checkCompat(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
+		// Loop through ins and outs and if any are defined implicitly, verify their type correctness
+		for (int i = 0; i < inSize(); i++) {
+			Pipe reqType = getIn(i).definition();
+			if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c);
+			else continue;
+			Pipe.checkCompat(runtimeIns[i], reqType, c.getLine());
+		}
+		for (int i = 0; i < outSize(); i++) {
+			Pipe reqType = getOut(i).definition();
+			if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c);
+			else continue;
+			Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
+		}
+	}
+	
+	@Override
+	public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
+		checkCompat(runtimeIns, runtimeOuts, c);
+		this.c = c;
+		call(runtimeIns,runtimeOuts,c.confNodes); // Forward to actual natives
+	}
+	
+	public void call(Pipe[] ins, Pipe[] outs) {
+		// Override
+	}
+	public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
+		this.call(ins, outs);
+	}
+	
+	public boolean isStatic() {return false;}
+	public boolean isInstantiated() {return true;}
+	public boolean isInline() {return false;}
+	
+}
+
+abstract class Directive extends Native {
+
+	protected Directive(String name, StructInput[] ins, StructOutput[] outs,
+			ConfNodeType[] confNodes) {
+		super(name, ins, outs, confNodes);
+	}
+	
+	public CachedCall processDirective(Pipe[] ins, Pipe[] outs, CachedCall c) {
+		super.checkCompat(ins, outs, c);
+		return this.directive(ins, outs, c.confNodes, c);
+	}
+	
+	protected abstract CachedCall directive(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes, CachedCall c);
+	
+	@Override
+	public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
+		
+	}
+
 }

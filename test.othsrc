@@ -5,7 +5,16 @@ instantiated sequence test
 	[12]:[a]
 	
 	EXECUTE{[a]++[a] ["EXECUTE: ", a, " is the new value of a"]PRINTLN}
+	EXECUTE{EXECUTE{[a]++[a] ["EXECUTE^2: ", a, " is the new value of a"]PRINTLN}}
 	["Main: a=", a]PRINTLN
+	
+	EXECUTE{
+		["Enter value for hidden var: "]PRINT
+		INPUT{String}[hiddenVar]
+		["Value of hidden var in execute scope is: ", hiddenVar]PRINTLN
+	}
+	
+	#PIPEEXISTS{"hiddenVar"}[>] [<, "exists!", "does not exist."]?:[>] ["hiddenVar ", <]PRINTLN
 	
 	//if{ [a,11]>=[con1] [a,12]<=[con2] [con1, con2]AND[>], < }: // {optional:statements, boolean}
 	//	[TRUE]:[result]
@@ -34,12 +43,12 @@ instantiated sequence test
 	getDefault[>] ["Default: ", <]PRINTLN
 	
 	["Enter two booleans (0 or 1): "]PRINT
-	[0]INPUT[>] [<, 1]=[bool1]
-	[0]INPUT[>] [<, 1]=[bool2]
+	INPUT{I8}[>] [<, 1]=[bool1]
+	INPUT{I8}[>] [<, 1]=[bool2]
 	[bool1, bool2]printBooleanOps
 	
 	["Enter two ints: "]PRINT
-	[0]INPUT[int1] [0]INPUT[int2]
+	INPUT{I32}[int1] INPUT{I32}[int2]
 	[int1,int2]SWAP[int1,int2]
 	[int1, "+", int2, "="]PRINT [int1, int2]+[>]PRINTLN
 	[int1, "-", int2, "="]PRINT [int1, int2]-[>]PRINTLN
