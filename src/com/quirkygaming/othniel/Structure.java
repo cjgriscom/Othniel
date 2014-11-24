@@ -26,7 +26,7 @@ public class Structure extends Callable implements PipeOwner {
 		super(name, inputs, outputs);
 		this.em = em;
 		this.rm = rm;
-		ParseError.validate(rm == RunMode.SEQUENTIAL, lineN, "Error: Parallel execution not yet implemented");
+		ParseError.validate(rm == RunMode.SEQUENTIAL, lineN, "Parallel execution not yet implemented");
 		this.inputs = inputs;
 		this.outputs = outputs;
 		for (Terminal pd : inputs) {

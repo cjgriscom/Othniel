@@ -91,15 +91,7 @@ public abstract class Pipe extends PipeDef {
 		}
 		Pipe newPipe = null;
 		
-		if (p instanceof DoublePipe) newPipe = new NumericPipe.DoublePipe(label);
-		else if (p instanceof SinglePipe) newPipe = new NumericPipe.SinglePipe(label);
-		else if (p instanceof I64Pipe) newPipe = new NumericPipe.I64Pipe(label);
-		else if (p instanceof I32Pipe) newPipe = new NumericPipe.I32Pipe(label);
-		else if (p instanceof I16Pipe) newPipe = new NumericPipe.I16Pipe(label);
-		else if (p instanceof I8Pipe) newPipe = new NumericPipe.I8Pipe(label);
-		else if (p instanceof StringPipe) newPipe = new StringPipe(label);
-		else if (p instanceof BoolPipe) newPipe = new BoolPipe(label);
-		else throw new RuntimeException("newPipe could not instantiate the type " + p.type());
+		newPipe = Datatype.instantiatePipe(label, p.type(), call.getLine());
 		
 		newPipe.set(p);
 		return newPipe;

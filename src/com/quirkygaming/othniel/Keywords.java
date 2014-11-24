@@ -4,19 +4,36 @@ public class Keywords {
 	
 	// TODO Maybe add directive keywords, like #VALIDATE{}
 	
-	public enum ConfNodeType {
-		STATEMENTSET("statements"), PIPE("pipe"), CONSTANT("constant");
+	public static class ConfNodeType {
+		public static ConfNodeType STATEMENTSET = new ConfNodeType("statements");
+		public static ConfNodeType PIPETYPE = new ConfNodeType("datatype");
 		
 		private String name;
+		private Object data = null;
 		private ConfNodeType(String s) {
 			name = s;
 		}
+		
+		public static ConfNodeType CONSTANT(Datatype type) {
+			ConfNodeType t = new ConfNodeType("constant");
+			t.data = type;
+			return t;
+		}
+		public boolean isConstant() {
+			return this.name.equals("constant");
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			return this.toString().equals(other.toString());
+		}
+		
 		public String toString() {
-			return name;
+			return name + (data == null ? "" : ":" + data.toString());
 		}
 	}
 	
-	public enum Blocks {
+	public static enum Blocks {
 		ENDTAG("end");
 		
 		private String name;
@@ -28,7 +45,7 @@ public class Keywords {
 		}
 	}
 	
-	public enum Privacy {
+	public static enum Privacy {
 		LOCAL("local"), GLOBAL("global");
 		
 		private String name;
@@ -40,7 +57,7 @@ public class Keywords {
 		}
 	}
 	
-	public enum StructureType {
+	public static enum StructureType {
 		TYPEDEF("typedef"), STRUCTURE("structure"), BLOCKDEF("blockdef");
 		
 		private String name;
@@ -52,7 +69,7 @@ public class Keywords {
 		}
 	}
 	
-	public enum ExecutionMode {
+	public static enum ExecutionMode {
 		STATIC("static"), INSTANTIATED("instantiated"), INLINE("inline");
 		
 		private String name;
@@ -64,7 +81,7 @@ public class Keywords {
 		}
 	}
 
-	public enum RunMode {
+	public static enum RunMode {
 		SEQUENTIAL("sequence"), PARALLEL("parallel");
 		
 		private String name;

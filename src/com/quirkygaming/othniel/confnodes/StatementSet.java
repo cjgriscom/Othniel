@@ -14,13 +14,12 @@ public class StatementSet implements ConfNode, PipeOwner {
 	
 	ArrayList<CachedCall> callList = new ArrayList<CachedCall>();
 	private final String name;
-	private final int nodeIndex;
 	
 	private final PipeMap pipeDefs;
 	
 	public StatementSet(String code, CachedCall c, PipeOwner parent, int nodeIndex) {
 		name = parent.name() + ".ConfNode" + nodeIndex + "StatementSet";
-		this.nodeIndex = nodeIndex;
+		
 		this.pipeDefs = new PipeMap(parent.pipeDefs());
 		
 		CallParser parser = new CallParser();

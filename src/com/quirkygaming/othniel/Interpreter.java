@@ -10,7 +10,9 @@ import com.quirkygaming.othniel.CallParser.ParsedCall;
 import com.quirkygaming.othniel.Keywords.ConfNodeType;
 import com.quirkygaming.othniel.Keywords.ExecutionMode;
 import com.quirkygaming.othniel.Keywords.RunMode;
+import com.quirkygaming.othniel.confnodes.ConfConstant;
 import com.quirkygaming.othniel.confnodes.ConfNode;
+import com.quirkygaming.othniel.confnodes.ConfPipeType;
 import com.quirkygaming.othniel.confnodes.StatementSet;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
 import com.quirkygaming.othniel.pipes.Terminal;
@@ -25,7 +27,7 @@ public class Interpreter {
 		Natives.initNatives();
 		Callable main = cacheFile("test.othsrc").get("test");
 		
-		main.call(new Pipe[0], new Pipe[0], new CachedCall(new Pipe[0], main, new ConfNode[0], new Pipe[0], -1));
+		main.call(new Pipe[0], new Pipe[0], new CachedCall(new Pipe[0], main, new ConfNode[0], new Pipe[0], -1, null));
 	}
 
 	public static HashMap<String, Callable> cacheFile(String filename) {
@@ -137,10 +139,21 @@ public class Interpreter {
 		Pipe outPipes[] = new Pipe[call.outParams.length];
 		ConfNode confNodes[] = new ConfNode[call.confNodes.length];
 		
-		CachedCall currentCall = new CachedCall(inPipes, targetCall, confNodes, outPipes, lineN);
+		CachedCall currentCall = new CachedCall(inPipes, targetCall, confNodes, outPipes, lineN, structure);
 		
 		int refInOccurance = 0; // For < and >
 		int refOutOccurance = 0; // For < and >
+		
+		for (int i = 0; i < call.confNodes.length; i++) {
+			String token = call.confNodes[i].trim();
+			if (targetCall.getConfNodeType(i).equals(ConfNodeType.STATEMENTSET)) {
+				currentCall.confNodes[i] = new StatementSet(token, currentCall, structure, i);
+			} else if (targetCall.getConfNodeType(i).isConstant()) {
+				currentCall.confNodes[i] = new ConfConstant(targetCall.getConfNodeType(i), token, currentCall, i);
+			} else if (targetCall.getConfNodeType(i).equals(ConfNodeType.PIPETYPE)) {
+				currentCall.confNodes[i] = new ConfPipeType(token, currentCall, i);
+			}
+		}
 		
 		for (int i = 0; i < call.inParams.length; i++) {
 			String token = call.inParams[i].trim();
@@ -199,11 +212,13 @@ public class Interpreter {
 			targetCall.getOut(i).checkCompatWith(outPipes[i], lineN, currentCall);
 		}
 		
-		for (int i = 0; i < call.confNodes.length; i++) {
-			String token = call.confNodes[i].trim();
-			if (targetCall.getConfNodeType(i) == ConfNodeType.STATEMENTSET) {
-				currentCall.confNodes[i] = new StatementSet(token, currentCall, structure, i);
-			} // TODO implement other types of ConfNodes
+		if (call.callName.startsWith("#")) { // It's a directive
+			currentCall = ((Directive)currentCall.call). // Replace call with directive result
+					directive(
+							currentCall.ins, 
+							currentCall.outs, 
+							currentCall.confNodes, 
+							currentCall);
 		}
 		
 		return currentCall;

@@ -2,12 +2,14 @@ package com.quirkygaming.othniel.pipes;
 
 import com.quirkygaming.othniel.CachedCall;
 import com.quirkygaming.othniel.Datatype;
+import com.quirkygaming.othniel.confnodes.ConfPipeType;
 
 public class UndefinedPipe extends Pipe {
 	
 	private int inputIndex = -2;
 	private int[] inputIndices = null;
 	private boolean waiting;
+	private boolean confNode = false;
 	
 	public UndefinedPipe(String label, Datatype abstractType) {
 		super(label, abstractType);
@@ -21,6 +23,12 @@ public class UndefinedPipe extends Pipe {
 	public UndefinedPipe(String label, int inputIndex, Datatype abstractType) { // Implicit constructor 
 		super(label, abstractType);
 		this.inputIndex = inputIndex;
+	}
+
+	public UndefinedPipe(String label, int index, Datatype abstractType, boolean fromConfNode) { // PipeType confNode constructor 
+		this(label, index, abstractType);
+		this.confNode = fromConfNode;
+		
 	}
 	
 	public UndefinedPipe(String label, int[] inputIndices, Datatype abstractType) {
@@ -54,12 +62,17 @@ public class UndefinedPipe extends Pipe {
 			for (int i : inputIndices) {
 				if (strongest == null || ((NumericPipe)call.ins[i]).isStrongerThan((NumericPipe)strongest)) {
 					strongest = call.ins[i];
-					inputIndex = i;
+					indexToUse = i;
 				}
 			}
 		}
-		Pipe p = call.ins[inputIndex];
-		return p;
+		if (confNode) {
+			return Datatype.instantiatePipe("UNNAMED", 
+					((ConfPipeType)call.confNodes[inputIndex]).getPipeType(), 
+					call.getLine());
+		} else {
+			return call.ins[indexToUse];
+		}
 	}
 	
 	@Override

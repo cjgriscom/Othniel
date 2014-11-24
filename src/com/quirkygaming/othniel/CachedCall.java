@@ -10,10 +10,11 @@ public class CachedCall {
 	public Pipe[] ins;
 	public Pipe[] outs;
 	public ConfNode[] confNodes;
-	private Callable call;
+	public Callable call;
 	private int lineN;
+	public PipeOwner parent;
 	
-	public CachedCall(Pipe[] ins, Callable call, ConfNode[] confNodes, Pipe[] outs, int lineN) {
+	public CachedCall(Pipe[] ins, Callable call, ConfNode[] confNodes, Pipe[] outs, int lineN, PipeOwner parent) {
 		this.defIns = ins;
 		this.defOuts = outs;
 		this.call = call;
@@ -21,6 +22,7 @@ public class CachedCall {
 		this.ins = ins;
 		this.outs = outs;
 		this.confNodes = confNodes;
+		this.parent = parent;
 	}
 
 	public void call() {
