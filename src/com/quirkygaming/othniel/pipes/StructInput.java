@@ -1,16 +1,15 @@
 package com.quirkygaming.othniel.pipes;
 
-public class StructInput extends Terminal {
+public class StructInput extends Variable {
 	
 	private boolean isOptional;
 	
-	public StructInput(Pipe definition) {
-		super(definition);
+	public StructInput(Pipe defaultPipe) {
+		super(defaultPipe);
 	}
 	
 	public StructInput(String expression, StructInput[] knownInParams, int lineN) {
 		super(Pipe.fromExpression(expression, knownInParams, true, lineN));
-		this.label = definition.label;
 		if (expression.contains("=")) this.isOptional = true; // Equal sign implies that input is optional
 	}
 	

@@ -3,7 +3,6 @@ package com.quirkygaming.othniel;
 import java.util.HashMap;
 
 import com.quirkygaming.othniel.Keywords.ConfNodeType;
-import com.quirkygaming.othniel.pipes.Pipe;
 import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
 
@@ -15,6 +14,7 @@ public abstract class Callable {
 	private boolean inputsArbitrary; // TODO automatic implicit reqs
 	private ConfNodeType[] confNodes;
 	private StructOutput[] outs;
+	boolean staticInitialized;
 	private final String name;
 	
 	public Callable(String name, StructInput[] ins, StructOutput[] outs, ConfNodeType[] confNodes) {
@@ -79,5 +79,5 @@ public abstract class Callable {
 	public abstract boolean isInstantiated();
 	public abstract boolean isInline();
 	
-	public abstract void call(Pipe[] ins, Pipe[] outs, CachedCall c);
+	public abstract void call(CachedCall c);
 }

@@ -16,19 +16,19 @@ import com.quirkygaming.othniel.confnodes.ConfNode;
 import com.quirkygaming.othniel.confnodes.ConfPipeType;
 import com.quirkygaming.othniel.confnodes.StatementSet;
 import com.quirkygaming.othniel.pipes.GarbagePipe;
-import com.quirkygaming.othniel.pipes.Terminal;
 import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.PipeDef;
 import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
-import com.quirkygaming.othniel.pipes.UndefinedPipe;
+import com.quirkygaming.othniel.pipes.Variable;
 
 public class Interpreter {
 	
 	public static void main(String[] args) {
 		Natives.initNatives();
-		Callable main = cacheFile("test.othsrc").get("test");
+		Structure main = (Structure)cacheFile("test.othsrc").get("test");
 		
-		main.call(new Pipe[0], new Pipe[0], new CachedCall(new Pipe[0], main, new ConfNode[0], new Pipe[0], -1, null));
+		main.call(new CachedCall(new Pipe[0], main, new ConfNode[0], new Pipe[0], -1, null));
 	}
 
 	public static HashMap<String, Callable> cacheFile(String filename) {
@@ -136,8 +136,8 @@ public class Interpreter {
 		ParseError.validate(call.outParams.length == targetCall.outSize(), lineN, "Number of outputs does not match");
 		ParseError.validate(call.confNodes.length == targetCall.confNodes(), lineN, "Number of configuration nodes does not match");
 		
-		Pipe inPipes[] = new Pipe[call.inParams.length];
-		Pipe outPipes[] = new Pipe[call.outParams.length];
+		PipeDef inPipes[] = new PipeDef[call.inParams.length];
+		PipeDef outPipes[] = new PipeDef[call.outParams.length];
 		ConfNode confNodes[] = new ConfNode[call.confNodes.length];
 		
 		CachedCall currentCall = new CachedCall(inPipes, targetCall, confNodes, outPipes, lineN, structure);
@@ -148,7 +148,10 @@ public class Interpreter {
 		for (int i = 0; i < call.confNodes.length; i++) {
 			String token = call.confNodes[i].trim();
 			if (targetCall.getConfNodeType(i).equals(ConfNodeType.STATEMENTSET)) {
-				currentCall.confNodes[i] = new StatementSet(token, currentCall, structure, i);
+				Structure topLevel;
+				if (structure instanceof StatementSet) topLevel = ((StatementSet)structure).topLevel();
+				else topLevel = (Structure)structure;
+				currentCall.confNodes[i] = new StatementSet(token, currentCall, topLevel, i);
 			} else if (targetCall.getConfNodeType(i).isConstant()) {
 				currentCall.confNodes[i] = new ConfConstant(targetCall.getConfNodeType(i), token, currentCall, i);
 			} else if (targetCall.getConfNodeType(i).equals(ConfNodeType.PIPETYPE)) {
@@ -177,7 +180,7 @@ public class Interpreter {
 					if (structure.pipeDefs().get(token) instanceof Pipe) {
 						inPipes[i] = (Pipe)structure.pipeDefs().get(token);
 					} else { //instanceof node
-						inPipes[i] = new UndefinedPipe((Terminal)structure.pipeDefs().get(token)); // The structure will handle the replacement
+						inPipes[i] = (Variable)structure.pipeDefs().get(token); // The structure will handle the replacement
 					}
 				} else {
 					inPipes[i] = cnst;
@@ -203,12 +206,12 @@ public class Interpreter {
 			} else if (structure.pipeDefs().containsKey(token)) {
 				if (structure.pipeDefs().get(token) instanceof Pipe) {
 					outPipes[i] = (Pipe)structure.pipeDefs().get(token);
-				} else { //instanceof node
-					outPipes[i] = new UndefinedPipe((Terminal)structure.pipeDefs().get(token)); // The structure will handle the replacement
+				} else { //instanceof variable
+					outPipes[i] = (Variable)structure.pipeDefs().get(token); // The CachedCall will handle variables
 				}
 			} else {
 				ParseError.validate(Constants.matchConstant(token, lineN) == null, lineN, "A constant can not be used as an output pipe: " + token);
-				Pipe p = targetCall.getOut(i).getCopy(token, currentCall);
+				Pipe p = targetCall.getOut(i).getInternalPipe().copy(token, currentCall);
 				structure.pipeDefs().put(token, p);
 				outPipes[i] = p;
 			}
@@ -218,8 +221,8 @@ public class Interpreter {
 		if (call.callName.startsWith("#")) { // It's a directive
 			currentCall = ((Directive)currentCall.call). // Replace call with directive result
 					directive(
-							currentCall.ins, 
-							currentCall.outs, 
+							currentCall.externalIns, 
+							currentCall.externalOuts, 
 							currentCall.confNodes, 
 							currentCall);
 		}

@@ -15,10 +15,10 @@ public class UndefinedPipe extends Pipe {
 		super(label, abstractType);
 	}
 	
-	public UndefinedPipe(Terminal p) {
-		super(p.definition.getLabel(), p.definition.type());
-		waiting = true;
-	}
+	//public UndefinedPipe(Terminal p) {
+	//	super(p.definition.getLabel(), p.definition.type());
+	//	waiting = true;
+	//}
 	
 	public UndefinedPipe(String label, int inputIndex, Datatype abstractType) { // Implicit constructor 
 		super(label, abstractType);
@@ -52,16 +52,16 @@ public class UndefinedPipe extends Pipe {
 		return waiting;
 	}
 	
-	public Pipe getImplicitReference(CachedCall call) {
-		if (inputIndex == -2) throw new RuntimeException("Improper use of getImplicitReference");
+	public PipeDef getImplicitReference(CachedCall call) {
+		if (inputIndex == -2) throw new RuntimeException("Improper use of getImplicitReference in " + this.label);
 		
 		int indexToUse = inputIndex;
 		if (indexToUse == -1) {
 			// Determine strongest numeric type
-			Pipe strongest = null;
+			PipeDef strongest = null;
 			for (int i : inputIndices) {
-				if (strongest == null || ((NumericPipe)call.ins[i]).isStrongerThan((NumericPipe)strongest)) {
-					strongest = call.ins[i];
+				if (strongest == null || ((NumericPipe)call.externalIns[i]).isStrongerThan((NumericPipe)strongest)) {
+					strongest = call.externalIns[i];
 					indexToUse = i;
 				}
 			}
@@ -71,13 +71,18 @@ public class UndefinedPipe extends Pipe {
 					((ConfPipeType)call.confNodes[inputIndex]).getPipeType(), 
 					call.getLine());
 		} else {
-			return call.ins[indexToUse];
+			return call.externalIns[indexToUse];
 		}
 	}
 	
 	@Override
 	public String toString() {
 		return "UNDEFINED PIPE";
+	}
+	
+	@Override
+	public Pipe getRuntimePipe() {
+		throw new RuntimeException("ImplError: cannot check runtime of UndefinedPipe " + this.getLabel());
 	}
 
 	@Override

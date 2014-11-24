@@ -82,10 +82,10 @@ public abstract class Pipe extends PipeDef {
 		super(label, type);
 	}
 	
-	public Pipe copy(CachedCall call) {
+	public Pipe copy(String label, CachedCall call) {
 		Pipe p;
 		if (this instanceof UndefinedPipe) {
-			p = ((UndefinedPipe)this).getImplicitReference(call); // TODO move to undefinedpipe
+			p = ((UndefinedPipe)this).getImplicitReference(call).getRuntimePipe(); // TODO move to undefinedpipe
 		} else {
 			p = this;
 		}
@@ -107,6 +107,13 @@ public abstract class Pipe extends PipeDef {
 	public abstract boolean isAbstract();
 	public boolean isNumeric() {
 		return this instanceof NumericPipe;
+	}
+	
+	public Pipe getInternalPipe() {
+		return this;
+	}
+	public Pipe getRuntimePipe() {
+		return this;
 	}
 	
 	@Override

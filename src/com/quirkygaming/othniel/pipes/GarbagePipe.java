@@ -18,6 +18,11 @@ public class GarbagePipe extends UndefinedPipe {
 	public String toString() {
 		return "GARBAGE PIPE";
 	}
+	
+	@Override
+	public Pipe getRuntimePipe() {
+		return this;
+	}
 
 	@Override
 	public boolean isAbstract() {return true;}

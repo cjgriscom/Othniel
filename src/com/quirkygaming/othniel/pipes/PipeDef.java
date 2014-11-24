@@ -13,8 +13,6 @@ public abstract class PipeDef {
 	
 	protected PipeDef() {}
 	
-	public abstract boolean isNumeric();
-	
 	public String getLabel() {
 		return label;
 	}
@@ -22,4 +20,11 @@ public abstract class PipeDef {
 	public Datatype type() {
 		return type;
 	}
+	
+	public abstract boolean isAbstract();
+	public abstract boolean isImplicit();
+	public abstract boolean isNumeric();
+	
+	public abstract Pipe getInternalPipe();
+	public abstract Pipe getRuntimePipe();
 }

@@ -12,6 +12,7 @@ import com.quirkygaming.othniel.confnodes.StatementSet;
 import com.quirkygaming.othniel.pipes.BoolPipe;
 import com.quirkygaming.othniel.pipes.NumericPipe;
 import com.quirkygaming.othniel.pipes.Pipe;
+import com.quirkygaming.othniel.pipes.PipeDef;
 import com.quirkygaming.othniel.pipes.StringPipe;
 import com.quirkygaming.othniel.pipes.StructInput;
 import com.quirkygaming.othniel.pipes.StructOutput;
@@ -58,7 +59,7 @@ public class Natives {
 		}
 		
 		@Override
-		public CachedCall directive(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes, CachedCall c) {
+		public CachedCall directive(PipeDef[] ins, PipeDef[] outs, ConfNode[] confNodes, CachedCall c) {
 			String label = ((ConfLabel)confNodes[0]).getLabel();
 			BoolPipe result = new BoolPipe("PIPEEXISTS", c.parent.pipeDefs().containsKey(label));
 			
@@ -262,27 +263,27 @@ abstract class Native extends Callable {
 		super(name, ins, outs, inputsArbitrary);
 	}
 	
-	protected void checkCompat(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
+	protected void checkCompat(PipeDef[] runtimeIns, PipeDef[] runtimeOuts, CachedCall c) {
 		// Loop through ins and outs and if any are defined implicitly, verify their type correctness
 		for (int i = 0; i < inSize(); i++) {
-			Pipe reqType = getIn(i).definition();
-			if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c);
+			Pipe reqType = getIn(i).getInternalPipe();
+			if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c).getRuntimePipe();
 			else continue;
-			Pipe.checkCompat(runtimeIns[i], reqType, c.getLine());
+			Pipe.checkCompat(runtimeIns[i].getRuntimePipe(), reqType, c.getLine());
 		}
 		for (int i = 0; i < outSize(); i++) {
-			Pipe reqType = getOut(i).definition();
-			if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c);
+			Pipe reqType = getOut(i).getInternalPipe();
+			if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c).getRuntimePipe();
 			else continue;
-			Pipe.checkCompat(reqType, runtimeOuts[i], c.getLine()); // TODO verify order
+			Pipe.checkCompat(reqType, runtimeOuts[i].getRuntimePipe(), c.getLine()); // TODO verify order
 		}
 	}
 	
 	@Override
-	public final void call(Pipe[] runtimeIns, Pipe[] runtimeOuts, CachedCall c) {
-		checkCompat(runtimeIns, runtimeOuts, c);
+	public final void call(CachedCall c) {
+		checkCompat(c.instanceIns, c.instanceOuts, c);
 		this.c = c;
-		call(runtimeIns,runtimeOuts,c.confNodes); // Forward to actual natives
+		call(c.instanceIns,c.instanceOuts,c.confNodes); // Forward to actual natives
 	}
 	
 	public void call(Pipe[] ins, Pipe[] outs) {
@@ -310,7 +311,7 @@ abstract class Directive extends Native {
 		return this.directive(ins, outs, c.confNodes, c);
 	}
 	
-	protected abstract CachedCall directive(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes, CachedCall c);
+	protected abstract CachedCall directive(PipeDef[] ins, PipeDef[] outs, ConfNode[] confNodes, CachedCall c);
 	
 	@Override
 	public void call(Pipe[] ins, Pipe[] outs, ConfNode[] confNodes) {
