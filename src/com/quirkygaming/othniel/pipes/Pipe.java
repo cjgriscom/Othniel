@@ -85,7 +85,7 @@ public abstract class Pipe extends PipeDef {
 	public Pipe copy(String label, CachedCall call) {
 		Pipe p;
 		if (this instanceof UndefinedPipe) {
-			p = ((UndefinedPipe)this).getImplicitReference(call).getRuntimePipe(); // TODO move to undefinedpipe
+			p = ((UndefinedPipe)this).getImplicitReference(call).getRuntimePipe(call); // TODO move to undefinedpipe
 		} else {
 			p = this;
 		}
@@ -112,7 +112,7 @@ public abstract class Pipe extends PipeDef {
 	public Pipe getInternalPipe() {
 		return this;
 	}
-	public Pipe getRuntimePipe() {
+	public Pipe getRuntimePipe(CachedCall c) {
 		return this;
 	}
 	

@@ -81,7 +81,7 @@ public class UndefinedPipe extends Pipe {
 	}
 	
 	@Override
-	public Pipe getRuntimePipe() {
+	public Pipe getRuntimePipe(CachedCall c) {
 		throw new RuntimeException("ImplError: cannot check runtime of UndefinedPipe " + this.getLabel());
 	}
 

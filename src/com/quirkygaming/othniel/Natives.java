@@ -267,15 +267,15 @@ abstract class Native extends Callable {
 		// Loop through ins and outs and if any are defined implicitly, verify their type correctness
 		for (int i = 0; i < inSize(); i++) {
 			Pipe reqType = getIn(i).getInternalPipe();
-			if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c).getRuntimePipe();
+			if (reqType.isImplicit()) reqType = getIn(i).getImplicitReference(c).getRuntimePipe(c);
 			else continue;
-			Pipe.checkCompat(runtimeIns[i].getRuntimePipe(), reqType, c.getLine());
+			Pipe.checkCompat(runtimeIns[i].getRuntimePipe(c), reqType, c.getLine());
 		}
 		for (int i = 0; i < outSize(); i++) {
 			Pipe reqType = getOut(i).getInternalPipe();
-			if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c).getRuntimePipe();
+			if (reqType.isImplicit()) reqType = getOut(i).getImplicitReference(c).getRuntimePipe(c);
 			else continue;
-			Pipe.checkCompat(reqType, runtimeOuts[i].getRuntimePipe(), c.getLine()); // TODO verify order
+			Pipe.checkCompat(reqType, runtimeOuts[i].getRuntimePipe(c), c.getLine()); // TODO verify order
 		}
 	}
 	

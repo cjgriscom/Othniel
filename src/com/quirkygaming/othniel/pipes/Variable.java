@@ -25,7 +25,7 @@ public abstract class Variable extends PipeDef {
 	}
 
 	@Override
-	public Pipe getRuntimePipe() {
+	public Pipe getRuntimePipe(CachedCall c) {
 		return currentPipe;
 	}
 	

@@ -40,7 +40,7 @@ public class CachedCall {
 				if (call.getIn(i).isAbstract()) {
 					instanceIns[i] = Datatype.instantiatePipe(
 							call.getIn(i).getLabel(), 
-							externalIns[i].getRuntimePipe().type(), 
+							externalIns[i].getRuntimePipe(this).type(), 
 							lineN);
 				} else {
 					instanceIns[i] = call.getIn(i).getInternalPipe().copy(call.getIn(i).getLabel(), this);
@@ -48,14 +48,14 @@ public class CachedCall {
 			}
 			for (int i = 0; i < instanceOuts.length; i++) {
 				if (call.getOut(i).isAbstract()) {
-					if (externalOuts[i].getRuntimePipe() instanceof GarbagePipe) {
+					if (externalOuts[i].getRuntimePipe(this) instanceof GarbagePipe) {
 						//TODO maybe there's a more resourceful way of passing on the garbage pipe
 						//This way just makes a new variable and loses the reference
 						instanceOuts[i] = call.getOut(i).getImplicitReference(this).getInternalPipe().copy(call.getOut(i).getLabel(), this);
 					} else {
 						instanceOuts[i] = Datatype.instantiatePipe(
 								call.getOut(i).getLabel(), 
-								externalOuts[i].getRuntimePipe().type(), 
+								externalOuts[i].getRuntimePipe(this).type(), 
 								lineN);
 					}
 				} else {
@@ -66,10 +66,10 @@ public class CachedCall {
 		
 		if (call.isStatic() && initialized) {
 			for (int i = 0; i < instanceIns.length; i++) {
-				instanceIns[i] = call.getIn(i).getRuntimePipe();
+				instanceIns[i] = call.getIn(i).getRuntimePipe(this);
 			}
 			for (int i = 0; i < instanceOuts.length; i++) {
-				instanceOuts[i] = call.getOut(i).getRuntimePipe();
+				instanceOuts[i] = call.getOut(i).getRuntimePipe(this);
 			}
 		}
 		
@@ -79,7 +79,7 @@ public class CachedCall {
 		
 		// Set in values
 		for (int i = 0; i < instanceIns.length; i++) {
-			if (externalIns[i] != null) instanceIns[i].set(externalIns[i].getRuntimePipe(), lineN);
+			if (externalIns[i] != null) instanceIns[i].set(externalIns[i].getRuntimePipe(this), lineN);
 			call.getIn(i).setInContext(instanceIns[i]);
 		}
 		for (int i = 0; i < instanceOuts.length; i++) {
@@ -89,7 +89,7 @@ public class CachedCall {
 		call.call(this);
 		
 		for (int i = 0; i < instanceOuts.length; i++) {
-			externalOuts[i].getRuntimePipe().set(instanceOuts[i], lineN);
+			externalOuts[i].getRuntimePipe(this).set(instanceOuts[i], lineN);
 		}
 	}
 	

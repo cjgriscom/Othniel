@@ -1,5 +1,6 @@
 package com.quirkygaming.othniel.pipes;
 
+import com.quirkygaming.othniel.CachedCall;
 import com.quirkygaming.othniel.Datatype;
 
 public abstract class PipeDef {
@@ -26,5 +27,5 @@ public abstract class PipeDef {
 	public abstract boolean isNumeric();
 	
 	public abstract Pipe getInternalPipe();
-	public abstract Pipe getRuntimePipe();
+	public abstract Pipe getRuntimePipe(CachedCall c);
 }

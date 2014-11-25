@@ -1,5 +1,6 @@
 package com.quirkygaming.othniel.pipes;
 
+import com.quirkygaming.othniel.CachedCall;
 import com.quirkygaming.othniel.Datatype;
 
 public class GarbagePipe extends UndefinedPipe {
@@ -20,7 +21,7 @@ public class GarbagePipe extends UndefinedPipe {
 	}
 	
 	@Override
-	public Pipe getRuntimePipe() {
+	public Pipe getRuntimePipe(CachedCall c) {
 		return this;
 	}
 
