@@ -29,16 +29,6 @@ public abstract class Variable extends PipeDef {
 		return currentPipe;
 	}
 	
-	//public Pipe getCopy(CachedCall c) {
-	//	return definition.copy(c);
-	//}
-	
-	//public Pipe getCopy(String newLabel, CachedCall c) {
-	//	Pipe p = definition.copy(c);
-	//	p.label = newLabel;
-	//	return p;
-	//}
-	
 	public PipeDef getImplicitReference(CachedCall c) {
 		return ((UndefinedPipe)defaultPipe).getImplicitReference(c);
 	}
